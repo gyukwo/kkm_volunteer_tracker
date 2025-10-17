@@ -1,0 +1,5 @@
+*.code-workspace
+config.properties
+desktop.ini
+.vscode
+target
