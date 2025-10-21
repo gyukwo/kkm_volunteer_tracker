@@ -1,4 +1,4 @@
-package soccer;
+package kkm;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import soccer.model.League;
+import kkm.model.League;
 
 public class DB {
 	private Connection conn = null;

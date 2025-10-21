@@ -1,4 +1,4 @@
-package soccer.model;
+package kkm.model;
 
 /* We will create a "model" object for most of our database entities. */
 public class League {

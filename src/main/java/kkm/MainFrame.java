@@ -1,4 +1,4 @@
-package soccer;
+package kkm;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -10,7 +10,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import soccer.pages.LeaguePages;
+import kkm.pages.LeaguePages;
 
 public class MainFrame extends Application {
     public static final Font PAGE_HEADING_FONT = new Font("Arial Bold", 28);

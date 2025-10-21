@@ -1,4 +1,4 @@
-package soccer.pages;
+package kkm.pages;
 
 import java.util.ArrayList;
 
@@ -12,9 +12,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import soccer.DB;
-import soccer.MainFrame;
-import soccer.model.League;
+import kkm.DB;
+import kkm.MainFrame;
+import kkm.model.League;
 
 public class LeaguePages {
 
