@@ -144,4 +144,55 @@ public class DB {
 		}
 	}
 
+	// Method to insert a new event into the event table
+    public static void insertEvent(String eventName, String eventLocation, String eventStart, String eventEnd, int eventVolunteers, String eventDescription) {
+        String query = "INSERT INTO event (event_name, event_location, event_start, event_end, event_volunteers, event_description) VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement stmt = db.conn.prepareStatement(query)) {
+            stmt.setString(1, eventName);
+            stmt.setString(2, eventLocation);
+            stmt.setString(3, eventStart);
+            stmt.setString(4, eventEnd);
+            stmt.setInt(5, eventVolunteers);
+            stmt.setString(6, eventDescription);
+            stmt.executeUpdate();
+        } catch (Exception ex) {
+            System.err.println(ex);
+            ex.printStackTrace(System.err);
+        }
+    }
+
+	// Method to insert a new user into the user table
+    public static void insertUser(String userName, String userPassword, String userStatus, String userType) {
+        String query = "INSERT INTO user (user_name, user_password, user_status, user_type) VALUES (?, ?, ?, ?)";
+
+        try (PreparedStatement stmt = db.conn.prepareStatement(query)) {
+            stmt.setString(1, userName);
+            stmt.setString(2, userPassword);
+            stmt.setString(3, userStatus);
+            stmt.setString(4, userType);
+            stmt.executeUpdate();
+        } catch (Exception ex) {
+            System.err.println(ex);
+            ex.printStackTrace(System.err);
+        }
+    }
+
+	// Method to insert a new event signup into the event_signup table
+    public static void insertEventSignup(int volunteerId, int eventId, String signupStartTime, String signupEndTime, String signupStatus) {
+        String query = "INSERT INTO event_signup (volunteer_id, event_id, event_signup_start_time, event_signup_end_time, event_signup_status) VALUES (?, ?, ?, ?, ?)";
+
+        try (PreparedStatement stmt = db.conn.prepareStatement(query)) {
+            stmt.setInt(1, volunteerId);
+            stmt.setInt(2, eventId);
+            stmt.setString(3, signupStartTime);
+            stmt.setString(4, signupEndTime);
+            stmt.setString(5, signupStatus);
+            stmt.executeUpdate();
+        } catch (Exception ex) {
+            System.err.println(ex);
+            ex.printStackTrace(System.err);
+        }
+    }
+
 }

@@ -19,173 +19,75 @@ import kkm.model.League;
 public class LeaguePages {
 
 
-    public static void showLeagueListPage (Stage stage) {       
-        ArrayList<League> leagues = DB.loadLeagues();
+    // Static method to show the Volunteer Page
+    public static void showVolunteerPage(Stage stage, String userName, boolean isSignedIn, String signInTime) {
+        // Create the main layout for the page
+        VBox vbox = new VBox(20); // Space between components
+        vbox.setAlignment(javafx.geometry.Pos.CENTER);
+
+        // Welcome message and dynamic user information
+        Text welcomeText = new Text("Welcome, " + userName + "!");
+        welcomeText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
         
-        GridPane gp = new GridPane();
-        gp.setAlignment(Pos.TOP_CENTER);
-        gp.setHgap(20);
-        gp.setVgap(10);
+        String signInStatus = isSignedIn ? "You are currently signed in since " + signInTime : "You are currently NOT signed in";
+        Text statusText = new Text(signInStatus);
+        statusText.setStyle("-fx-font-size: 14px;");
+        
+        // Buttons for navigation
+        Button dailyEventsButton = new Button("Daily Events");
+        Button totalHoursButton = new Button("Total Hours");
+        Button signOutButton = new Button("Sign Out");
 
-        Label idHeading = new Label("Id");
-        idHeading.setFont(MainFrame.TABLE_HEADING_FONT);
-        gp.add(idHeading, 0, 0);
-
-        Label nameHeader = new Label("Name");
-        nameHeader.setFont(MainFrame.TABLE_HEADING_FONT);
-        gp.add(nameHeader, 1, 0);
-
-        for (int i=0; i<leagues.size(); i++) {
-            final int leagueId = leagues.get(i).getLeagueId();
-
-            Button btModify = new Button("Modify");
-            btModify.setOnAction(e -> {
-                showModifyLeague(stage, leagueId);
-            });
-
-            Button btDelete = new Button("Delete");
-            btDelete.setOnAction(e-> {
-                DB.deleteLeague(leagueId);
-                showLeagueListPage(stage);
-            });
-
-            League league = leagues.get(i);
-
-            Label idBody = new Label("" + league.getLeagueId());
-            idBody.setFont(MainFrame.TABLE_BODY_FONT);
-            gp.add(idBody, 0, i+1);
-
-            Label nameBody = new Label("" + league.getLeagueName());
-            nameBody.setFont(MainFrame.TABLE_BODY_FONT);
-            gp.add(nameBody, 1, i+1);
-
-            gp.add(btModify, 2, i+1);
-
-            if (league.hasTeams() == false) {
-                gp.add(btDelete, 3, i+1);
-            }
-        }
-
-        Button btAddLeague = new Button("Add New League");
-        btAddLeague.setOnAction(e -> showAddLeague(stage));
-
-        Button btMainMenu = new Button("Main Menu");
-        btMainMenu.setOnAction(e -> MainFrame.loadMenu(stage));
-
-        HBox hbox = new HBox();
-        hbox.setPadding(new Insets(30,0,0,0));
-        hbox.setAlignment(Pos.TOP_CENTER);
-        hbox.getChildren().addAll(btAddLeague, btMainMenu);
-
-        Label pageTitle = new Label("Leagues");
-        pageTitle.setFont(MainFrame.PAGE_HEADING_FONT);
-        pageTitle.setPadding(new Insets(0,0,30,0));
-
-        VBox vb = new VBox();
-        vb.setAlignment(Pos.TOP_CENTER);
-        vb.getChildren().addAll(pageTitle, gp, hbox);
-
-
-        Scene scene = new Scene(vb);
-
-        stage.setScene(scene);
-        stage.show();
-    }
-
-
-    public static void showAddLeague (Stage stage) {       
-        GridPane gp = new GridPane();
-        gp.setAlignment(Pos.TOP_CENTER);
-        gp.setHgap(20);
-        gp.setVgap(10);
-
-        Label labelName = new Label("Name");
-        labelName.setFont(MainFrame.TABLE_HEADING_FONT);
-        gp.add(labelName, 0, 0);
-
-        TextField txtName = new TextField();
-        gp.add(txtName, 1, 0);
-
-        Button btAddLeague = new Button("Add");
-        btAddLeague.setOnAction(e -> {
-            DB.insertLeague(txtName.getText());
-            showLeagueListPage(stage);
+        // Action for the buttons (example)
+        dailyEventsButton.setOnAction(e -> {
+            // Logic to navigate to daily events page
+            loadDailyEvents();
         });
         
-        Button btMainMenu = new Button("Cancel");
-        btMainMenu.setOnAction(e -> showLeagueListPage(stage));
+        totalHoursButton.setOnAction(e -> {
+            // Logic to navigate to total hours page
+            loadTotalHours();
+        });
 
-        HBox hbox = new HBox();
-        hbox.setPadding(new Insets(30,0,0,0));
-        hbox.setAlignment(Pos.TOP_CENTER);
-        hbox.getChildren().addAll(btAddLeague, btMainMenu);
+        signOutButton.setOnAction(e -> {
+            // Logic for signing out
+            signOutUser();
+        });
 
-        Label pageTitle = new Label("Add League");
-        pageTitle.setFont(MainFrame.PAGE_HEADING_FONT);
-        pageTitle.setPadding(new Insets(0,0,30,0));
+        // Back button to navigate to the main menu
+        Button backButton = new Button("Back");
+        backButton.setOnAction(e -> {
+            // Logic for going back to the previous page or main menu
+            System.out.println("Navigating back to the main menu...");
+        });
 
-        VBox vb = new VBox();
-        vb.setAlignment(Pos.TOP_CENTER);
-        vb.getChildren().addAll(pageTitle, gp, hbox);
+        // Add all components to the VBox layout
+        vbox.getChildren().addAll(backButton, welcomeText, statusText, dailyEventsButton, totalHoursButton, signOutButton);
 
-        Scene scene = new Scene(vb);
-
+        // Set up the scene and the stage
+        Scene scene = new Scene(vbox, 400, 300);
         stage.setScene(scene);
-        stage.show();
+        stage.setTitle("Volunteer Page");
+        stage.show(); // Show the page
     }
 
+    // Sample method to simulate the sign-out action
+    public static void signOutUser() {
+        // Logic to update the database and handle sign-out action
+        System.out.println("User signed out.");
+    }
 
-    public static void showModifyLeague (Stage stage, int leagueId) {       
-        League league = DB.loadLeague(leagueId);
+    // Sample method to simulate loading daily events
+    public static void loadDailyEvents() {
+        // Logic to display daily events from the database
+        System.out.println("Loading daily events...");
+    }
 
-        GridPane gp = new GridPane();
-        gp.setAlignment(Pos.TOP_CENTER);
-        gp.setHgap(20);
-        gp.setVgap(10);
-
-        Label labelLeagueIdHeading = new Label("Id");
-        labelLeagueIdHeading.setFont(MainFrame.TABLE_HEADING_FONT);
-        gp.add(labelLeagueIdHeading, 0, 0);
-
-        Label labelLeagueId = new Label("" + leagueId);
-        labelLeagueId.setFont(MainFrame.TABLE_BODY_FONT);
-        gp.add(labelLeagueId, 1, 0);
-
-        Label labelName = new Label("Name");
-        labelName.setFont(MainFrame.TABLE_HEADING_FONT);
-        gp.add(labelName, 0, 1);
-
-        TextField txtName = new TextField(league.getLeagueName());
-        txtName.setFont(MainFrame.TABLE_BODY_FONT);
-        gp.add(txtName, 1, 1);
-
-        Button btModifyLeague = new Button("Modify");
-        btModifyLeague.setOnAction(e -> {
-            league.setLeagueName(txtName.getText());
-            DB.updateLeague(league);
-            showLeagueListPage(stage);
-        });
-        
-        Button btMainMenu = new Button("Cancel");
-        btMainMenu.setOnAction(e -> showLeagueListPage(stage));
-
-        HBox hbox = new HBox();
-        hbox.setPadding(new Insets(30,0,0,0));
-        hbox.setAlignment(Pos.TOP_CENTER);
-        hbox.getChildren().addAll(btModifyLeague, btMainMenu);
-
-        Label pageTitle = new Label("Modify League");
-        pageTitle.setFont(MainFrame.PAGE_HEADING_FONT);
-        pageTitle.setPadding(new Insets(0,0,30,0));
-
-        VBox vb = new VBox();
-        vb.setAlignment(Pos.TOP_CENTER);
-        vb.getChildren().addAll(pageTitle, gp, hbox);
-
-        Scene scene = new Scene(vb);
-
-        stage.setScene(scene);
-        stage.show();
+    // Sample method to simulate loading total volunteer hours
+    public static void loadTotalHours() {
+        // Logic to display total volunteer hours from the database
+        System.out.println("Loading total hours...");
+    }
     }
 
 

@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import kkm.pages.LeaguePages;
+import kkm.pages.VolunteerPage;
 
 public class MainFrame extends Application {
     public static final Font PAGE_HEADING_FONT = new Font("Comic Sans MS", 35);
@@ -26,9 +27,9 @@ public class MainFrame extends Application {
 }
     public static void loadMenu (Stage stage) {        
         Button btLogin = new Button("  User Login  ");
-        Button btSignUp = new Button("User Sign-up");
+        Button btSignUp = new Button("User Signp");
 
-        btLogin.setOnAction(e-> LeaguePages.showLeagueListPage(stage));
+        btLogin.setOnAction(e-> VolunteerPage.showVolunteerPage(stage));
 
         GridPane gp = new GridPane();
         gp.setAlignment(Pos.TOP_CENTER);
