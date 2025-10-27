@@ -10,8 +10,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import kkm.pages.LeaguePages;
 import kkm.pages.VolunteerPage;
+import kkm.pages.EventsPage;
 
 public class MainFrame extends Application {
     public static final Font PAGE_HEADING_FONT = new Font("Comic Sans MS", 35);
@@ -27,9 +27,9 @@ public class MainFrame extends Application {
 }
     public static void loadMenu (Stage stage) {        
         Button btLogin = new Button("  User Login  ");
-        Button btSignUp = new Button("User Signp");
+        Button btSignUp = new Button("User Signup");
 
-        btLogin.setOnAction(e-> VolunteerPage.showVolunteerPage(stage));
+        btLogin.setOnAction(e-> VolunteerPage.showVolunteerPage(stage, "PLACEHOLDER (username)", true, "PLACEHOLDER TIME"));
 
         GridPane gp = new GridPane();
         gp.setAlignment(Pos.TOP_CENTER);

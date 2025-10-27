@@ -6,9 +6,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import kkm.model.Event;
 import kkm.model.League;
 
 public class DB {
@@ -39,35 +41,37 @@ public class DB {
 		}
 	}
 
-	/** Returns an array list of the leagues in the database. */
-	public static ArrayList<League> loadLeagues() {
-		ArrayList<League> list = new ArrayList<>();
-		String queryString = " select league.league_id, league_name, count(team.league_id)  as teams_count " +
-				" from league  " +
-				" left join team on league.league_id = team.league_id " +
-				" group by league.league_id, league_name " +
-				" order by league_name ";
+	/** Returns an array list of the events in the database. */
+	public static ArrayList<Event> loadEvents() {
+		ArrayList<Event> list = new ArrayList<>();
+
+		String queryString = "SELECT event_id, event_name, event_location, event_start, event_end, " +
+				"event_volunteers, event_description " +
+				"FROM event " +
+				"ORDER BY event_start";
 
 		try (
 				PreparedStatement queryStmt = db.conn.prepareStatement(queryString);
 				ResultSet rs = queryStmt.executeQuery();) {
-
 			while (rs.next()) {
-				int leagueId = rs.getInt("league_id");
-				String leagueName = rs.getString("league_name");
+				int eventId = rs.getInt("event_id");
+				String eventName = rs.getString("event_name");
+				String eventLocation = rs.getString("event_location");
 
-				boolean hasTeams = false;
-				if (rs.getInt("teams_count") > 0) {
-					hasTeams = true;
-				}
+				// Assuming event_start and event_end are DATETIME in DB
+				LocalDateTime eventStart = rs.getTimestamp("event_start").toLocalDateTime();
+				LocalDateTime eventEnd = rs.getTimestamp("event_end").toLocalDateTime();
 
-				League league = new League(leagueId, leagueName, hasTeams);
+				int eventVolunteers = rs.getInt("event_volunteers");
+				String eventDescription = rs.getString("event_description");
 
-				list.add(league);
+				// Build Event object
+				Event event = new Event(eventId, eventName, eventLocation, eventStart, eventEnd, eventVolunteers, eventDescription);
+				list.add(event);
 			}
 
 		} catch (Exception ex) {
-			System.err.println(ex);
+			System.err.println("Error loading events: " + ex.getMessage());
 			ex.printStackTrace(System.err);
 		}
 
@@ -145,54 +149,56 @@ public class DB {
 	}
 
 	// Method to insert a new event into the event table
-    public static void insertEvent(String eventName, String eventLocation, String eventStart, String eventEnd, int eventVolunteers, String eventDescription) {
-        String query = "INSERT INTO event (event_name, event_location, event_start, event_end, event_volunteers, event_description) VALUES (?, ?, ?, ?, ?, ?)";
+	public static void insertEvent(String eventName, String eventLocation, String eventStart, String eventEnd,
+			int eventVolunteers, String eventDescription) {
+		String query = "INSERT INTO event (event_name, event_location, event_start, event_end, event_volunteers, event_description) VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = db.conn.prepareStatement(query)) {
-            stmt.setString(1, eventName);
-            stmt.setString(2, eventLocation);
-            stmt.setString(3, eventStart);
-            stmt.setString(4, eventEnd);
-            stmt.setInt(5, eventVolunteers);
-            stmt.setString(6, eventDescription);
-            stmt.executeUpdate();
-        } catch (Exception ex) {
-            System.err.println(ex);
-            ex.printStackTrace(System.err);
-        }
-    }
+		try (PreparedStatement stmt = db.conn.prepareStatement(query)) {
+			stmt.setString(1, eventName);
+			stmt.setString(2, eventLocation);
+			stmt.setString(3, eventStart);
+			stmt.setString(4, eventEnd);
+			stmt.setInt(5, eventVolunteers);
+			stmt.setString(6, eventDescription);
+			stmt.executeUpdate();
+		} catch (Exception ex) {
+			System.err.println(ex);
+			ex.printStackTrace(System.err);
+		}
+	}
 
 	// Method to insert a new user into the user table
-    public static void insertUser(String userName, String userPassword, String userStatus, String userType) {
-        String query = "INSERT INTO user (user_name, user_password, user_status, user_type) VALUES (?, ?, ?, ?)";
+	public static void insertUser(String userName, String userPassword, String userStatus, String userType) {
+		String query = "INSERT INTO user (user_name, user_password, user_status, user_type) VALUES (?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = db.conn.prepareStatement(query)) {
-            stmt.setString(1, userName);
-            stmt.setString(2, userPassword);
-            stmt.setString(3, userStatus);
-            stmt.setString(4, userType);
-            stmt.executeUpdate();
-        } catch (Exception ex) {
-            System.err.println(ex);
-            ex.printStackTrace(System.err);
-        }
-    }
+		try (PreparedStatement stmt = db.conn.prepareStatement(query)) {
+			stmt.setString(1, userName);
+			stmt.setString(2, userPassword);
+			stmt.setString(3, userStatus);
+			stmt.setString(4, userType);
+			stmt.executeUpdate();
+		} catch (Exception ex) {
+			System.err.println(ex);
+			ex.printStackTrace(System.err);
+		}
+	}
 
 	// Method to insert a new event signup into the event_signup table
-    public static void insertEventSignup(int volunteerId, int eventId, String signupStartTime, String signupEndTime, String signupStatus) {
-        String query = "INSERT INTO event_signup (volunteer_id, event_id, event_signup_start_time, event_signup_end_time, event_signup_status) VALUES (?, ?, ?, ?, ?)";
+	public static void insertEventSignup(int volunteerId, int eventId, String signupStartTime, String signupEndTime,
+			String signupStatus) {
+		String query = "INSERT INTO event_signup (volunteer_id, event_id, event_signup_start_time, event_signup_end_time, event_signup_status) VALUES (?, ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = db.conn.prepareStatement(query)) {
-            stmt.setInt(1, volunteerId);
-            stmt.setInt(2, eventId);
-            stmt.setString(3, signupStartTime);
-            stmt.setString(4, signupEndTime);
-            stmt.setString(5, signupStatus);
-            stmt.executeUpdate();
-        } catch (Exception ex) {
-            System.err.println(ex);
-            ex.printStackTrace(System.err);
-        }
-    }
+		try (PreparedStatement stmt = db.conn.prepareStatement(query)) {
+			stmt.setInt(1, volunteerId);
+			stmt.setInt(2, eventId);
+			stmt.setString(3, signupStartTime);
+			stmt.setString(4, signupEndTime);
+			stmt.setString(5, signupStatus);
+			stmt.executeUpdate();
+		} catch (Exception ex) {
+			System.err.println(ex);
+			ex.printStackTrace(System.err);
+		}
+	}
 
 }
