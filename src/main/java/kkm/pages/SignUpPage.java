@@ -73,7 +73,7 @@ public class SignUpPage {
             String userType = typeF.getText().trim();
 
             if (username.isEmpty() || password.isEmpty() || confirm.isEmpty() || userType.isEmpty()) {
-                error.setText("Username and password are required.");
+                error.setText("All fields are required.");
                 return;
             }
             if (!password.equals(confirm)) {
