@@ -12,6 +12,7 @@ import java.util.Properties;
 
 import kkm.model.Event;
 import kkm.model.League;
+import kkm.model.User;
 
 public class DB {
 	private Connection conn = null;
@@ -41,7 +42,7 @@ public class DB {
 		}
 	}
 
-	/** Returns an array list of the events in the database. */
+	// Returns an array list of the events in the database.
 	public static ArrayList<Event> loadEvents() {
 		ArrayList<Event> list = new ArrayList<>();
 
@@ -66,7 +67,8 @@ public class DB {
 				String eventDescription = rs.getString("event_description");
 
 				// Build Event object
-				Event event = new Event(eventId, eventName, eventLocation, eventStart, eventEnd, eventVolunteers, eventDescription);
+				Event event = new Event(eventId, eventName, eventLocation, eventStart, eventEnd, eventVolunteers,
+						eventDescription);
 				list.add(event);
 			}
 
@@ -78,7 +80,7 @@ public class DB {
 		return list;
 	}
 
-	/** Loads a single league given an id. */
+	// Loads a single league given an id.
 	public static League loadLeague(int leagueId) {
 		String queryString = " select league.league_id, league_name " +
 				" from league  " +
@@ -104,7 +106,7 @@ public class DB {
 		return null;
 	}
 
-	/** Adds a new league to the database. */
+	// Adds a new league to the database.
 	public static void insertLeague(String leagueName) {
 		String query = "insert into league(league_name) values (?)";
 
@@ -134,7 +136,7 @@ public class DB {
 		}
 	}
 
-	/** Deletes the given league from the database. */
+	// Deletes the given league from the database. //
 	public static void deleteLeague(int leagueId) {
 		String query = "delete from league where league_id = ?";
 
@@ -181,6 +183,82 @@ public class DB {
 			System.err.println(ex);
 			ex.printStackTrace(System.err);
 		}
+	}
+
+	// Load a single user by id.
+	public static User loadUser(int userId) {
+		String sql = "SELECT user_id, full_name, email, phone, is_admin " +
+				"FROM user " + // <-- change to `users` if that's your table name
+				"WHERE user_id = ?";
+
+		try (PreparedStatement ps = db.conn.prepareStatement(sql)) {
+			ps.setInt(1, userId);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					int id = rs.getInt("user_id");
+					String fullName = rs.getString("full_name");
+					String email = rs.getString("email");
+					String phone = rs.getString("phone");
+					boolean isAdmin = rs.getBoolean("is_admin");
+
+					return new User(id, fullName, email, phone, isAdmin);
+				}
+			}
+		} catch (Exception ex) {
+			System.err.println("Error loading user " + userId + ": " + ex.getMessage());
+			ex.printStackTrace(System.err);
+		}
+		return null;
+	}
+
+	//Load past events attended by a user (events whose end time is before now).
+	public static ArrayList<Event> loadPastEventsForUser(int userId) {
+		ArrayList<Event> list = new ArrayList<>();
+
+		String sql = "SELECT e.event_id, e.event_name, e.event_location, e.event_start, e.event_end, " +
+				"       e.event_volunteers, e.event_description " +
+				"FROM event e " +
+				"JOIN event_signup s ON s.event_id = e.event_id " +
+				"WHERE s.user_id = ? " +
+				// If you track attendance confirmation, uncomment the next line:
+				// " AND s.attended = 1 " +
+				"  AND e.event_end < CURRENT_TIMESTAMP " +
+				"ORDER BY e.event_start DESC";
+
+		try (PreparedStatement ps = db.conn.prepareStatement(sql)) {
+			ps.setInt(1, userId);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				while (rs.next()) {
+					int eventId = rs.getInt("event_id");
+					String eventName = rs.getString("event_name");
+					String eventLocation = rs.getString("event_location");
+
+					// null-safe timestamp → LocalDateTime
+					LocalDateTime start = null;
+					java.sql.Timestamp tsStart = rs.getTimestamp("event_start");
+					if (tsStart != null)
+						start = tsStart.toLocalDateTime();
+
+					LocalDateTime end = null;
+					java.sql.Timestamp tsEnd = rs.getTimestamp("event_end");
+					if (tsEnd != null)
+						end = tsEnd.toLocalDateTime();
+
+					int volunteers = rs.getInt("event_volunteers");
+					String desc = rs.getString("event_description");
+
+					Event e = new Event(eventId, eventName, eventLocation, start, end, volunteers, desc);
+					list.add(e);
+				}
+			}
+		} catch (Exception ex) {
+			System.err.println("Error loading past events for user " + userId + ": " + ex.getMessage());
+			ex.printStackTrace(System.err);
+		}
+
+		return list;
 	}
 
 	// Method to insert a new event signup into the event_signup table

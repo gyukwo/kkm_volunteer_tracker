@@ -1,6 +1,7 @@
 package kkm.pages;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ import kkm.model.Event;
 public class EventsPage {
 
     /** Shows all events that start today (by local date of event_start). */
-    public static void showDailyEvents(Stage stage) {
+    public static void showDailyEvents(int userId, Stage stage, String userName, boolean isSignedIn, LocalDateTime signInTime) {
         ArrayList<Event> allEvents = DB.loadEvents();
 
         LocalDate today = LocalDate.now();
@@ -105,13 +106,13 @@ public class EventsPage {
             }
         }
 
-        Button btMainMenu = new Button("Main Menu");
-        btMainMenu.setOnAction(e -> MainFrame.loadMenu(stage));
+        Button btBack = new Button("Back");
+        btBack.setOnAction(e -> VolunteerPage.showVolunteerPage(userId, stage, userName, isSignedIn, signInTime));
 
         HBox hbox = new HBox();
         hbox.setPadding(new Insets(30, 0, 0, 0));
         hbox.setAlignment(Pos.TOP_CENTER);
-        hbox.getChildren().addAll(btMainMenu);
+        hbox.getChildren().addAll(btBack);
 
         Label pageTitle = new Label("Today's Events");
         pageTitle.setFont(MainFrame.PAGE_HEADING_FONT);

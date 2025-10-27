@@ -1,60 +1,55 @@
 package kkm.pages;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import kkm.DB;
 import kkm.MainFrame;
-import kkm.model.League;
 
 public class VolunteerPage {
 
 
     // Static method to show the Volunteer Page
-    public static void showVolunteerPage(Stage stage, String userName, boolean isSignedIn, String signInTime) {
-        // Create the main layout for the page
-        VBox vbox = new VBox(20); // Space between components
-        vbox.setAlignment(javafx.geometry.Pos.CENTER);
-
-        // Welcome message and dynamic user information
-        Text welcomeText = new Text("Welcome, " + userName + "!");
-        welcomeText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
-        
-        String signInStatus = isSignedIn ? "You are currently signed in since " + signInTime : "You are currently NOT signed in";
-        Text statusText = new Text(signInStatus);
-        statusText.setStyle("-fx-font-size: 14px;");
-        
-        // Buttons for navigation
-        Button dailyEventsButton = new Button("Daily Events");
-        Button totalHoursButton = new Button("Total Hours");
-        Button signOutButton = new Button("Sign Out");
-
-        // Action for the buttons (example)
-        dailyEventsButton.setOnAction(e -> {
-            // Logic to navigate to daily events page
-            EventsPage.showDailyEvents(stage);
-            System.out.println("Loading daily events...");
-        });
-        
-        totalHoursButton.setOnAction(e -> {
-            // Logic to navigate to total hours page
-            loadTotalHours();
-        });
-
-        signOutButton.setOnAction(e -> {
-            // Logic for signing out
-            signOutUser();
-        });
+    public static void showVolunteerPage(int userId, Stage stage, String userName, final boolean isSignedIn, LocalDateTime signInTime) {
+                    // Create the main layout for the page
+                    VBox vbox = new VBox(20); // Space between components
+                    vbox.setAlignment(javafx.geometry.Pos.CENTER);
+            
+                    // Welcome message and dynamic user information
+                    Text welcomeText = new Text("Welcome, " + userName + "!");
+                    welcomeText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+            
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy hh:mm a");
+                    String formatted = signInTime.format(formatter);
+                    String signInStatus = isSignedIn ? "You are currently signed in since " + formatted: "You are currently NOT signed in";
+                    Text statusText = new Text(signInStatus);
+                    statusText.setStyle("-fx-font-size: 14px;");
+                    
+                    // Buttons for navigation
+                    Button dailyEventsButton = new Button("Daily Events");
+                    Button totalHoursButton = new Button("Total Hours");
+                    Button signOutButton = new Button("Sign Out");
+            
+                    // Action for the buttons (example)
+                    dailyEventsButton.setOnAction(e -> {
+                        // Logic to navigate to daily events page
+                        EventsPage.showDailyEvents(userId, stage, userName, isSignedIn, signInTime);
+                        System.out.println("Loading daily events...");
+                    });
+                    
+                    totalHoursButton.setOnAction(e -> {
+                        HoursPage.showUserHours(userId, stage, userName, isSignedIn, signInTime);
+                        System.out.println("Loading total hours...");
+                    });
+            
+                    signOutButton.setOnAction(e -> {
+                        MainFrame.loadMenu(stage);  // go back to main menu
+                        isSignedIn = false;   // mark user as signed out
+                });
 
         // Back button to navigate to the main menu
         Button backButton = new Button("Back");
@@ -77,13 +72,7 @@ public class VolunteerPage {
     // Sample method to simulate the sign-out action
     public static void signOutUser() {
         // Logic to update the database and handle sign-out action
+        
         System.out.println("User signed out.");
-    }
-
-
-    // Sample method to simulate loading total volunteer hours
-    public static void loadTotalHours() {
-        // Logic to display total volunteer hours from the database
-        System.out.println("Loading total hours...");
     }
 }

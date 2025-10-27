@@ -12,6 +12,8 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import kkm.pages.VolunteerPage;
 import kkm.pages.EventsPage;
+import java.time.LocalDateTime;
+
 
 public class MainFrame extends Application {
     public static final Font PAGE_HEADING_FONT = new Font("Comic Sans MS", 35);
@@ -29,7 +31,11 @@ public class MainFrame extends Application {
         Button btLogin = new Button("  User Login  ");
         Button btSignUp = new Button("User Signup");
 
-        btLogin.setOnAction(e-> VolunteerPage.showVolunteerPage(stage, "PLACEHOLDER (username)", true, "PLACEHOLDER TIME"));
+        btLogin.setOnAction(e-> {
+            LocalDateTime signInTime = LocalDateTime.now();
+            VolunteerPage.showVolunteerPage(0,stage, "PLACEHOLDER (username)", true, signInTime);
+        }
+        );
 
         GridPane gp = new GridPane();
         gp.setAlignment(Pos.TOP_CENTER);
