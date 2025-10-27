@@ -1,7 +1,6 @@
 package kkm.pages;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,54 +16,47 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import kkm.DB;
 import kkm.MainFrame;
+import kkm.Session;
 import kkm.model.Event;
 
 public class EventsPage {
 
     /** Shows all events that start today (by local date of event_start). */
-    public static void showDailyEvents(int userId, Stage stage, String userName, boolean isSignedIn, LocalDateTime signInTime) {
+    public static void showDailyEvents(Stage stage) {
         ArrayList<Event> allEvents = DB.loadEvents();
 
         LocalDate today = LocalDate.now();
         List<Event> todays = new ArrayList<>();
-
         for (Event e : allEvents) {
-            if (e.getEventStart() != null &&
-                    e.getEventStart().toLocalDate().isEqual(today)) {
+            if (e.getEventStart() != null && e.getEventStart().toLocalDate().isEqual(today)) {
                 todays.add(e);
             }
         }
+
         GridPane gp = new GridPane();
         gp.setAlignment(Pos.TOP_CENTER);
         gp.setHgap(20);
         gp.setVgap(10);
 
-        // Headings
         int row = 0;
         Label nameH = new Label("Name");
         nameH.setFont(MainFrame.TABLE_BODY_FONT);
         gp.add(nameH, 0, row);
-
         Label locH = new Label("Location");
         locH.setFont(MainFrame.TABLE_BODY_FONT);
         gp.add(locH, 1, row);
-
         Label startH = new Label("Start");
         startH.setFont(MainFrame.TABLE_BODY_FONT);
         gp.add(startH, 2, row);
-
         Label endH = new Label("End");
         endH.setFont(MainFrame.TABLE_BODY_FONT);
         gp.add(endH, 3, row);
-
         Label volsH = new Label("# Volunteers");
         volsH.setFont(MainFrame.TABLE_BODY_FONT);
         gp.add(volsH, 4, row);
-
         Label descH = new Label("Description");
         descH.setFont(MainFrame.TABLE_BODY_FONT);
         gp.add(descH, 5, row);
-
         row++;
 
         DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("h:mm a");
@@ -78,7 +70,6 @@ public class EventsPage {
                 Label name = new Label(ev.getEventName());
                 name.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(name, 0, row);
-
                 Label loc = new Label(ev.getEventLocation());
                 loc.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(loc, 1, row);
@@ -89,15 +80,12 @@ public class EventsPage {
                 Label start = new Label(startStr);
                 start.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(start, 2, row);
-
                 Label end = new Label(endStr);
                 end.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(end, 3, row);
-
                 Label vols = new Label(String.valueOf(ev.getEventVolunteers()));
                 vols.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(vols, 4, row);
-
                 Label desc = new Label(ev.getEventDescription() == null ? "" : ev.getEventDescription());
                 desc.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(desc, 5, row);
@@ -107,7 +95,7 @@ public class EventsPage {
         }
 
         Button btBack = new Button("Back");
-        btBack.setOnAction(e -> VolunteerPage.showVolunteerPage(userId, stage, userName, isSignedIn, signInTime));
+        btBack.setOnAction(e -> VolunteerPage.showVolunteerPage(stage));
 
         HBox hbox = new HBox();
         hbox.setPadding(new Insets(30, 0, 0, 0));
@@ -122,9 +110,9 @@ public class EventsPage {
         vbox.setAlignment(Pos.TOP_CENTER);
         vbox.getChildren().addAll(pageTitle, gp, hbox);
 
-        Scene scene = new Scene(vbox, 400, 300);
+        Scene scene = new Scene(vbox, 600, 400);
         stage.setScene(scene);
         stage.setTitle("Events Page");
-        stage.show(); // Show the page
+        stage.show();
     }
 }

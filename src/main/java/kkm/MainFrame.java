@@ -12,6 +12,9 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import kkm.pages.VolunteerPage;
 import kkm.pages.EventsPage;
+import kkm.pages.LoginPage;
+import kkm.pages.SignUpPage;
+
 import java.time.LocalDateTime;
 
 
@@ -32,10 +35,13 @@ public class MainFrame extends Application {
         Button btSignUp = new Button("User Signup");
 
         btLogin.setOnAction(e-> {
-            LocalDateTime signInTime = LocalDateTime.now();
-            VolunteerPage.showVolunteerPage(0,stage, "PLACEHOLDER (username)", true, signInTime);
+           LoginPage.showLogin(stage);
         }
         );
+
+        btSignUp.setOnAction(e->{
+            SignUpPage.showSignUp(stage);
+        });
 
         GridPane gp = new GridPane();
         gp.setAlignment(Pos.TOP_CENTER);

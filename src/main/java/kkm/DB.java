@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -261,6 +262,70 @@ public class DB {
 		return list;
 	}
 
+	public static boolean usernameExists(String username) {
+		String sql = "SELECT COUNT(*) FROM `user` WHERE `user_name` = ?";
+		try (PreparedStatement ps = db.conn.prepareStatement(sql)) {
+			ps.setString(1, username);
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) return rs.getInt(1) > 0;
+			}
+		} catch (Exception ex) {
+			System.err.println("Error checking username: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+		}
+		return false;
+	}
+	
+	public static int insertUser(String username, String password, String userType) {
+		String sql = "INSERT INTO `user` (`user_name`, `user_password`, `user_type`, `user_status`) VALUES (?, ?, ?, ?)";
+		try (PreparedStatement ps = db.conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+			ps.setString(1, username);
+			ps.setString(2, password);
+			ps.setString(3, userType);
+			ps.setInt(4, 1); // default status, or adjust as you like
+	
+			int updated = ps.executeUpdate();
+			if (updated > 0) {
+				try (ResultSet keys = ps.getGeneratedKeys()) {
+					if (keys.next()) return keys.getInt(1);
+				}
+			}
+		} catch (Exception ex) {
+			System.err.println("Error inserting user: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+		}
+		return -1;
+	}
+	
+	public static int verifyUser(String username, String password) {
+		String sql = "SELECT `user_id` FROM `user` WHERE `user_name` = ? AND `user_password` = ?";
+		try (PreparedStatement ps = db.conn.prepareStatement(sql)) {
+			ps.setString(1, username);
+			ps.setString(2, password);
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) return rs.getInt("user_id");
+			}
+		} catch (Exception ex) {
+			System.err.println("Error verifying user: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+		}
+		return -1;
+	}
+	
+	public static int getUserIdByUsername(String username) {
+		String sql = "SELECT user_id FROM `user` WHERE `user_name` = ?";
+		try (PreparedStatement ps = db.conn.prepareStatement(sql)) {
+			ps.setString(1, username);
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) return rs.getInt("user_id");
+			}
+		} catch (Exception ex) {
+			System.err.println("Error looking up userId: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+		}
+		return -1;
+	}
+	
 	// Method to insert a new event signup into the event_signup table
 	public static void insertEventSignup(int volunteerId, int eventId, String signupStartTime, String signupEndTime,
 			String signupStatus) {
@@ -278,5 +343,6 @@ public class DB {
 			ex.printStackTrace(System.err);
 		}
 	}
+
 
 }
