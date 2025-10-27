@@ -72,7 +72,7 @@ public class SignUpPage {
             String confirm = pass2F.getText().trim();
             String userType = typeF.getText().trim();
 
-            if (username.isEmpty() || password.isEmpty()) {
+            if (username.isEmpty() || password.isEmpty() || confirm.isEmpty() || userType.isEmpty()) {
                 error.setText("Username and password are required.");
                 return;
             }
