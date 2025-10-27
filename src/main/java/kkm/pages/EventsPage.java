@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import kkm.DB;
 import kkm.MainFrame;
@@ -21,15 +22,15 @@ import kkm.model.Event;
 
 public class EventsPage {
 
-    /** Shows all events that start today (by local date of event_start). */
+    // Show all events that start today 
     public static void showDailyEvents(Stage stage) {
         ArrayList<Event> allEvents = DB.loadEvents();
 
         LocalDate today = LocalDate.now();
-        List<Event> todays = new ArrayList<>();
+        List<Event> todaysEvents = new ArrayList<>();
         for (Event e : allEvents) {
             if (e.getEventStart() != null && e.getEventStart().toLocalDate().isEqual(today)) {
-                todays.add(e);
+                todaysEvents.add(e);
             }
         }
 
@@ -38,35 +39,42 @@ public class EventsPage {
         gp.setHgap(20);
         gp.setVgap(10);
 
+        //Create Labels for All the Parameters
         int row = 0;
-        Label nameH = new Label("Name");
-        nameH.setFont(MainFrame.TABLE_BODY_FONT);
-        gp.add(nameH, 0, row);
-        Label locH = new Label("Location");
-        locH.setFont(MainFrame.TABLE_BODY_FONT);
-        gp.add(locH, 1, row);
-        Label startH = new Label("Start");
-        startH.setFont(MainFrame.TABLE_BODY_FONT);
-        gp.add(startH, 2, row);
-        Label endH = new Label("End");
-        endH.setFont(MainFrame.TABLE_BODY_FONT);
-        gp.add(endH, 3, row);
-        Label volsH = new Label("# Volunteers");
-        volsH.setFont(MainFrame.TABLE_BODY_FONT);
-        gp.add(volsH, 4, row);
-        Label descH = new Label("Description");
-        descH.setFont(MainFrame.TABLE_BODY_FONT);
-        gp.add(descH, 5, row);
+        Label nameLabel = new Label("Name");
+        nameLabel.setTextFill(Color.RED);
+        nameLabel.setFont(MainFrame.TABLE_BODY_FONT);
+        gp.add(nameLabel, 0, row);
+        Label locLabel = new Label("Location");
+        locLabel.setTextFill(Color.RED);
+        locLabel.setFont(MainFrame.TABLE_BODY_FONT);
+        gp.add(locLabel, 1, row);
+        Label startLabel = new Label("Start");
+        startLabel.setTextFill(Color.RED);
+        startLabel.setFont(MainFrame.TABLE_BODY_FONT);
+        gp.add(startLabel, 2, row);
+        Label endLabel = new Label("End");
+        endLabel.setTextFill(Color.RED);
+        endLabel.setFont(MainFrame.TABLE_BODY_FONT);
+        gp.add(endLabel, 3, row);
+        Label volsLabel = new Label("# Volunteers");
+        volsLabel.setTextFill(Color.RED);
+        volsLabel.setFont(MainFrame.TABLE_BODY_FONT);
+        gp.add(volsLabel, 4, row);
+        Label descLabel = new Label("Description");
+        descLabel.setTextFill(Color.RED);
+        descLabel.setFont(MainFrame.TABLE_BODY_FONT);
+        gp.add(descLabel, 5, row);
         row++;
 
         DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("h:mm a");
 
-        if (todays.isEmpty()) {
+        if (todaysEvents.isEmpty()) {
             Label none = new Label("No events scheduled for today.");
             none.setFont(MainFrame.TABLE_BODY_FONT);
             gp.add(none, 0, row, 6, 1);
         } else {
-            for (Event ev : todays) {
+            for (Event ev : todaysEvents) {
                 Label name = new Label(ev.getEventName());
                 name.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(name, 0, row);
@@ -74,8 +82,19 @@ public class EventsPage {
                 loc.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(loc, 1, row);
 
-                String startStr = ev.getEventStart() == null ? "-" : ev.getEventStart().format(timeFmt);
-                String endStr = ev.getEventEnd() == null ? "-" : ev.getEventEnd().format(timeFmt);
+                String startStr = "";
+                if(ev.getEventStart() == null) {
+                    startStr = "-";
+                } else {
+                    startStr = ev.getEventEnd().format(timeFmt);
+                }
+
+                String endStr = "";
+                if(ev.getEventEnd() == null) {
+                    endStr = "-";
+                } else {
+                    endStr = ev.getEventEnd().format(timeFmt);
+                }
 
                 Label start = new Label(startStr);
                 start.setFont(MainFrame.TABLE_BODY_FONT);
@@ -86,7 +105,12 @@ public class EventsPage {
                 Label vols = new Label(String.valueOf(ev.getEventVolunteers()));
                 vols.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(vols, 4, row);
-                Label desc = new Label(ev.getEventDescription() == null ? "" : ev.getEventDescription());
+                
+                String descString = "";
+                if(ev.getEventDescription() != null){
+                    descString = ev.getEventDescription();
+                }
+                Label desc = new Label(descString);
                 desc.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(desc, 5, row);
 

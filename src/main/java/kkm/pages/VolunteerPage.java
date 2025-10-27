@@ -28,9 +28,10 @@ public class VolunteerPage {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy hh:mm a");
         String formatted = (signInTime == null) ? "-" : signInTime.format(formatter);
 
+        //TODO right now this is for signed in to account, but I wanted it to be since u signed in for an event
         String signInStatus = Session.isSignedIn()
                 ? "You are currently signed in since " + formatted
-                : "You are currently NOT signed in";
+                : "You are currently NOT signed in for an event";
         Text statusText = new Text(signInStatus);
         statusText.setStyle("-fx-font-size: 14px;");
 
@@ -46,10 +47,7 @@ public class VolunteerPage {
             MainFrame.loadMenu(stage);
         });
 
-        Button backButton = new Button("Back");
-        backButton.setOnAction(e -> MainFrame.loadMenu(stage));
-
-        vbox.getChildren().addAll(backButton, welcomeText, statusText,
+        vbox.getChildren().addAll(welcomeText, statusText,
                 dailyEventsButton, totalHoursButton, signOutButton);
 
         stage.setScene(new Scene(vbox, 400, 300));
