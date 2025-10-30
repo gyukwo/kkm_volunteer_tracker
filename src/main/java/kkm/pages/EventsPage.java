@@ -114,6 +114,39 @@ public class EventsPage {
                 desc.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(desc, 5, row);
 
+                int userId = Session.getUserId(); 
+                
+                Button signUpButton = new Button("Sign Up");
+                Button signOutButton = new Button("Sign Out");
+
+
+                if (DB.isUserSignedUpForEvent(userId, ev.getEventId())) {
+                    signUpButton.setVisible(false);
+                    signOutButton.setVisible(true);
+                } else {
+                    signUpButton.setVisible(true);
+                    signOutButton.setVisible(false);
+                }
+
+                signUpButton.setOnAction(e -> {
+                    DB.addUserToEvent(userId, ev.getEventId());
+                    Session.startVolunteerSession(userId, ev);  // Start volunteer session
+                    signUpButton.setVisible(false);
+                    signOutButton.setVisible(true);
+                    System.out.println("Signed up for event: " + ev.getEventName());
+                });
+
+                signOutButton.setOnAction(e -> {
+                    DB.removeUserFromEvent(userId, ev.getEventId());
+                    Session.endVolunteerSession(userId, ev);  // End volunteer session
+                    signUpButton.setVisible(true);
+                    signOutButton.setVisible(false);
+                    System.out.println("Signed out from event: " + ev.getEventName());
+                });
+
+                gp.add(signUpButton, 6, row); // Add sign-up button
+                gp.add(signOutButton, 6, row); // Add sign-out button
+
                 row++;
             }
         }

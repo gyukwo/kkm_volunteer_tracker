@@ -35,4 +35,7 @@ public final class Session {
         userId = -1;
         userName = "";
     }
+
+
+
 }
