@@ -101,7 +101,7 @@ public class SignUpPage {
 
         HBox actions = new HBox(15, btCreate, btBack);
         actions.setAlignment(Pos.CENTER);
-        actions.setPadding(new Insets(10, 0, 0, 0));
+        actions.setPadding(new Insets(10, 0, 0, 0)); 
 
         root.getChildren().addAll(title, form, error, actions);
 
