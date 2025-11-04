@@ -22,7 +22,7 @@ import kkm.model.Event;
 
 public class EventsPage {
 
-    // Show all events that start today 
+    // Show all events that start today
     public static void showDailyEvents(Stage stage) {
         ArrayList<Event> allEvents = DB.loadEvents();
 
@@ -39,7 +39,7 @@ public class EventsPage {
         gp.setHgap(20);
         gp.setVgap(10);
 
-        //Create Labels for All the Parameters
+        // Create Labels for All the Parameters
         int row = 0;
         Label nameLabel = new Label("Name");
         nameLabel.setTextFill(Color.DARKGREEN);
@@ -83,14 +83,14 @@ public class EventsPage {
                 gp.add(loc, 2, row);
 
                 String startStr = "";
-                if(ev.getEventStart() == null) {
+                if (ev.getEventStart() == null) {
                     startStr = "-";
                 } else {
                     startStr = ev.getEventEnd().format(timeFmt);
                 }
 
                 String endStr = "";
-                if(ev.getEventEnd() == null) {
+                if (ev.getEventEnd() == null) {
                     endStr = "-";
                 } else {
                     endStr = ev.getEventEnd().format(timeFmt);
@@ -105,9 +105,9 @@ public class EventsPage {
                 Label vols = new Label(String.valueOf(ev.getEventVolunteers()));
                 vols.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(vols, 5, row);
-                
+
                 String descString = "";
-                if(ev.getEventDescription() != null){
+                if (ev.getEventDescription() != null) {
                     descString = ev.getEventDescription();
                 }
                 Label desc = new Label(descString);
@@ -130,11 +130,11 @@ public class EventsPage {
 
                 signUpButton.setOnAction(e -> {
                     if (signUpButton.getText().equals("Sign Up")) {
-                        DB.addUserToEvent(userId, ev.getEventId());  // Add the user to the event
+                        DB.addUserToEvent(userId, ev.getEventId()); // Add the user to the event
                         signUpButton.setText("Sign Out");
                         System.out.println("Successfully signed up for event: " + ev.getEventName());
                     } else {
-                        DB.removeUserFromEvent(userId, ev.getEventId());  // Remove the user from the event
+                        DB.removeUserFromEvent(userId, ev.getEventId()); // Remove the user from the event
                         signUpButton.setText("Sign Up");
                         System.out.println("Successfully signed out from event: " + ev.getEventName());
                     }

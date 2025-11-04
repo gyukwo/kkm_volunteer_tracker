@@ -10,19 +10,40 @@ public final class Session {
     private static int userId = -1;
     private static String userName = "";
 
-    private Session() {} // no instances
+    private Session() {
+    } // no instances
 
-    public static boolean isSignedIn() { return signedIn; }
-    public static void setSignedIn(boolean v) { signedIn = v; }
+    public static boolean isSignedIn() {
+        return signedIn;
+    }
 
-    public static LocalDateTime getSignInTime() { return signInTime; }
-    public static void setSignInTime(LocalDateTime t) { signInTime = t; }
+    public static void setSignedIn(boolean v) {
+        signedIn = v;
+    }
 
-    public static int getUserId() { return userId; }
-    public static void setUserId(int id) { userId = id; }
+    public static LocalDateTime getSignInTime() {
+        return signInTime;
+    }
 
-    public static String getUserName() { return userName; }
-    public static void setUserName(String n) { userName = n; }
+    public static void setSignInTime(LocalDateTime t) {
+        signInTime = t;
+    }
+
+    public static int getUserId() {
+        return userId;
+    }
+
+    public static void setUserId(int id) {
+        userId = id;
+    }
+
+    public static String getUserName() {
+        return userName;
+    }
+
+    public static void setUserName(String n) {
+        userName = n;
+    }
 
     public static void signIn(int id, String name, LocalDateTime time) {
         userId = id;
@@ -50,7 +71,5 @@ public final class Session {
     public static boolean isUserSignedUpForEvent(int eventId) {
         return userEventSignups.getOrDefault(eventId, false);
     }
-
-
 
 }

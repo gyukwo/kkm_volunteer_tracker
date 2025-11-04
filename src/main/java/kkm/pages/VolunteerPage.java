@@ -28,7 +28,8 @@ public class VolunteerPage {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy hh:mm a");
         String formatted = (signInTime == null) ? "-" : signInTime.format(formatter);
 
-        //TODO right now this is for signed in to account, but I wanted it to be since u signed in for an event
+        // TODO right now this is for signed in to account, but I wanted it to be since
+        // u signed in for an event
         String signInStatus = Session.isSignedIn()
                 ? "You are currently signed in since " + formatted
                 : "You are currently NOT signed in for an event";

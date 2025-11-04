@@ -22,19 +22,19 @@ public class MainFrame extends Application {
         launch(args);
     }
 
-    public void start(Stage primaryStage)  {
+    public void start(Stage primaryStage) {
         loadMenu(primaryStage);
-}
-    public static void loadMenu (Stage stage) {        
+    }
+
+    public static void loadMenu(Stage stage) {
         Button btLogin = new Button("  User Login  ");
         Button btSignUp = new Button("User Signup");
 
-        btLogin.setOnAction(e-> {
-           LoginPage.showLogin(stage);
-        }
-        );
+        btLogin.setOnAction(e -> {
+            LoginPage.showLogin(stage);
+        });
 
-        btSignUp.setOnAction(e->{
+        btSignUp.setOnAction(e -> {
             SignUpPage.showSignUp(stage);
         });
 
@@ -47,8 +47,8 @@ public class MainFrame extends Application {
 
         Label pageTitle = new Label("KKM Volunteer Tracker");
         pageTitle.setFont(MainFrame.PAGE_HEADING_FONT);
-        pageTitle.setPadding(new Insets(20,0,30,0));
-        
+        pageTitle.setPadding(new Insets(20, 0, 30, 0));
+
         VBox vb = new VBox();
         vb.setAlignment(Pos.TOP_CENTER);
         vb.getChildren().addAll(pageTitle, gp);
@@ -61,6 +61,5 @@ public class MainFrame extends Application {
         stage.setHeight(600);
         stage.show();
     }
-
 
 }
