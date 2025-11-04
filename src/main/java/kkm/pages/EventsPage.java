@@ -44,27 +44,27 @@ public class EventsPage {
         Label nameLabel = new Label("Name");
         nameLabel.setTextFill(Color.DARKGREEN);
         nameLabel.setFont(MainFrame.TABLE_BODY_FONT);
-        gp.add(nameLabel, 0, row);
+        gp.add(nameLabel, 1, row);
         Label locLabel = new Label("Location");
         locLabel.setTextFill(Color.DARKGREEN);
         locLabel.setFont(MainFrame.TABLE_BODY_FONT);
-        gp.add(locLabel, 1, row);
+        gp.add(locLabel, 2, row);
         Label startLabel = new Label("Start");
         startLabel.setTextFill(Color.DARKGREEN);
         startLabel.setFont(MainFrame.TABLE_BODY_FONT);
-        gp.add(startLabel, 2, row);
+        gp.add(startLabel, 3, row);
         Label endLabel = new Label("End");
         endLabel.setTextFill(Color.DARKGREEN);
         endLabel.setFont(MainFrame.TABLE_BODY_FONT);
-        gp.add(endLabel, 3, row);
+        gp.add(endLabel, 4, row);
         Label volsLabel = new Label("# Volunteers");
         volsLabel.setTextFill(Color.DARKGREEN);
         volsLabel.setFont(MainFrame.TABLE_BODY_FONT);
-        gp.add(volsLabel, 4, row);
+        gp.add(volsLabel, 5, row);
         Label descLabel = new Label("Description");
         descLabel.setTextFill(Color.DARKGREEN);
         descLabel.setFont(MainFrame.TABLE_BODY_FONT);
-        gp.add(descLabel, 5, row);
+        gp.add(descLabel, 6, row);
         row++;
 
         DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("h:mm a");
@@ -77,10 +77,10 @@ public class EventsPage {
             for (Event ev : todaysEvents) {
                 Label name = new Label(ev.getEventName());
                 name.setFont(MainFrame.TABLE_BODY_FONT);
-                gp.add(name, 0, row);
+                gp.add(name, 1, row);
                 Label loc = new Label(ev.getEventLocation());
                 loc.setFont(MainFrame.TABLE_BODY_FONT);
-                gp.add(loc, 1, row);
+                gp.add(loc, 2, row);
 
                 String startStr = "";
                 if(ev.getEventStart() == null) {
@@ -98,13 +98,13 @@ public class EventsPage {
 
                 Label start = new Label(startStr);
                 start.setFont(MainFrame.TABLE_BODY_FONT);
-                gp.add(start, 2, row);
+                gp.add(start, 3, row);
                 Label end = new Label(endStr);
                 end.setFont(MainFrame.TABLE_BODY_FONT);
-                gp.add(end, 3, row);
+                gp.add(end, 4, row);
                 Label vols = new Label(String.valueOf(ev.getEventVolunteers()));
                 vols.setFont(MainFrame.TABLE_BODY_FONT);
-                gp.add(vols, 4, row);
+                gp.add(vols, 5, row);
                 
                 String descString = "";
                 if(ev.getEventDescription() != null){
@@ -112,40 +112,35 @@ public class EventsPage {
                 }
                 Label desc = new Label(descString);
                 desc.setFont(MainFrame.TABLE_BODY_FONT);
-                gp.add(desc, 5, row);
+                gp.add(desc, 6, row);
 
-                int userId = Session.getUserId(); 
-                
-                Button signUpButton = new Button("Sign Up");
-                Button signOutButton = new Button("Sign Out");
+                int userId = Session.getUserId();
 
+                boolean isUserSignedUp = Session.isUserSignedUpForEvent(ev.getEventId());
+                String text = "";
 
+                // Check if user is already signed up for the event
                 if (DB.isUserSignedUpForEvent(userId, ev.getEventId())) {
-                    signUpButton.setVisible(false);
-                    signOutButton.setVisible(true);
+                    text = "Sign Out";
                 } else {
-                    signUpButton.setVisible(true);
-                    signOutButton.setVisible(false);
+                    text = "Sign Up";
                 }
 
+                Button signUpButton = new Button(text);
+
                 signUpButton.setOnAction(e -> {
-                    DB.addUserToEvent(userId, ev.getEventId());
-                    Session.startVolunteerSession(userId, ev);  // Start volunteer session
-                    signUpButton.setVisible(false);
-                    signOutButton.setVisible(true);
-                    System.out.println("Signed up for event: " + ev.getEventName());
+                    if (signUpButton.getText().equals("Sign Up")) {
+                        DB.addUserToEvent(userId, ev.getEventId());  // Add the user to the event
+                        signUpButton.setText("Sign Out");
+                        System.out.println("Successfully signed up for event: " + ev.getEventName());
+                    } else {
+                        DB.removeUserFromEvent(userId, ev.getEventId());  // Remove the user from the event
+                        signUpButton.setText("Sign Up");
+                        System.out.println("Successfully signed out from event: " + ev.getEventName());
+                    }
                 });
 
-                signOutButton.setOnAction(e -> {
-                    DB.removeUserFromEvent(userId, ev.getEventId());
-                    Session.endVolunteerSession(userId, ev);  // End volunteer session
-                    signUpButton.setVisible(true);
-                    signOutButton.setVisible(false);
-                    System.out.println("Signed out from event: " + ev.getEventName());
-                });
-
-                gp.add(signUpButton, 6, row); // Add sign-up button
-                gp.add(signOutButton, 6, row); // Add sign-out button
+                gp.add(signUpButton, 0, row); // Add sign-up button
 
                 row++;
             }

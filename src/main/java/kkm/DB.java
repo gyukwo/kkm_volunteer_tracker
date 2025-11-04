@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -344,6 +345,66 @@ public class DB {
 		}
 	}
 
+	public static void addUserToEvent(int volunteerId, int eventId) {
+    String queryString = "INSERT INTO event_signup (volunteer_id, event_id, event_signup_start_time, event_signup_status) VALUES (?, ?, NOW(), 1)";
+    try (PreparedStatement ps = db.conn.prepareStatement(queryString)) {
+        ps.setInt(1, volunteerId);
+        ps.setInt(2, eventId);
+        ps.executeUpdate();
+        System.out.println("User " + volunteerId + " signed up for event " + eventId);
+    } catch (SQLException ex) {
+        System.err.println("Error adding user to event: " + ex.getMessage());
+        ex.printStackTrace();
+    }
+	}
 	
+	public static void removeUserFromEvent(int volunteerId, int eventId) {
+    String queryString = "UPDATE event_signup SET event_signup_end_time = NOW(), event_signup_status = 0 WHERE volunteer_id = ? AND event_id = ?";
+    try (PreparedStatement ps = db.conn.prepareStatement(queryString)) {
+        ps.setInt(1, volunteerId);
+        ps.setInt(2, eventId);
+        int rowsAffected = ps.executeUpdate();
+        if (rowsAffected > 0) {
+            System.out.println("User " + volunteerId + " removed from event " + eventId);
+        } else {
+            System.out.println("User " + volunteerId + " was not signed up for event " + eventId);
+        }
+    } catch (SQLException ex) {
+        System.err.println("Error removing user from event: " + ex.getMessage());
+        ex.printStackTrace();
+    }
+	}
+
+	public static boolean isUserSignedUpForEvent(int volunteerId, int eventId) {
+		String queryString = "SELECT COUNT(*) FROM event_signup WHERE volunteer_id = ? AND event_id = ? AND event_signup_status = 1";
+		try (PreparedStatement ps = db.conn.prepareStatement(queryString)) {
+			ps.setInt(1, volunteerId);
+			ps.setInt(2, eventId);
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					return rs.getInt(1) > 0; // If count is greater than 0, the user is signed up
+				}
+			}
+		} catch (SQLException ex) {
+			System.err.println("Error checking if user is signed up: " + ex.getMessage());
+			ex.printStackTrace();
+		}
+		return false;
+	}
+
+	public static void updateUserStatusForEvent(int volunteerId, int eventId, int status) {
+    String queryString = "UPDATE event_signup SET event_signup_status = ? WHERE volunteer_id = ? AND event_id = ?";
+    try (PreparedStatement ps = db.conn.prepareStatement(queryString)) {
+        ps.setInt(1, status);  // 1 for signed in, 0 for signed out
+        ps.setInt(2, volunteerId);
+        ps.setInt(3, eventId);
+        ps.executeUpdate();
+        System.out.println("User " + volunteerId + " status updated for event " + eventId);
+    } catch (SQLException ex) {
+        System.err.println("Error updating user status: " + ex.getMessage());
+        ex.printStackTrace();
+    }
+}
+
 
 }

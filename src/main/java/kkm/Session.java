@@ -1,6 +1,8 @@
 package kkm;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class Session {
     private static boolean signedIn = false;
@@ -34,6 +36,19 @@ public final class Session {
         signInTime = null;
         userId = -1;
         userName = "";
+    }
+
+    // A map to store event sign-up statuses for the user
+    private static Map<Integer, Boolean> userEventSignups = new HashMap<>();
+
+    // Method to set the sign-up status for a user for a specific event
+    public static void setUserEventSignup(int eventId, boolean isSignedUp) {
+        userEventSignups.put(eventId, isSignedUp);
+    }
+
+    // Method to get the sign-up status for a specific event
+    public static boolean isUserSignedUpForEvent(int eventId) {
+        return userEventSignups.getOrDefault(eventId, false);
     }
 
 
