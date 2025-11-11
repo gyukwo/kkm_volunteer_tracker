@@ -72,7 +72,7 @@ public class EventsPage {
         Label error = new Label();
         error.setTextFill(Color.GREEN);
         error.setFont(MainFrame.TABLE_BODY_FONT);
-    
+
         if (todaysEvents.isEmpty()) {
             Label none = new Label("No events scheduled for today.");
             none.setFont(MainFrame.TABLE_BODY_FONT);
@@ -150,7 +150,6 @@ public class EventsPage {
 
                 gp.add(signUpButton, 0, row); // Add sign-up button
                 gp.add(error, 0, row); // Add sign-up button
-
 
                 row++;
             }

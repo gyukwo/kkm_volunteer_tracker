@@ -214,54 +214,54 @@ public class DB {
 		return null;
 	}
 
-	// Load past events attended by a user (events whose end time is before now).
+	// Load the past 5 most recent events attended by a user (events whose end time is before now).
 	public static ArrayList<Event> loadPastEventsForUser(int userId) {
 		ArrayList<Event> list = new ArrayList<>();
-
-		String sql = "SELECT e.event_id, e.event_name, e.event_location, e.event_start, e.event_end, " +
-				"       e.event_volunteers, e.event_description " +
-				"FROM event e " +
-				"JOIN event_signup s ON s.event_id = e.event_id " +
-				"WHERE s.user_id = ? " +
-				// If you track attendance confirmation, uncomment the next line:
-				// " AND s.attended = 1 " +
-				"  AND e.event_end < CURRENT_TIMESTAMP " +
-				"ORDER BY e.event_start DESC";
-
+	
+		String sql =
+			"SELECT e.event_id, e.event_name, e.event_location, e.event_start, e.event_end, " +
+			"       e.event_volunteers, e.event_description " +
+			"FROM event e " +
+			"JOIN event_signup s ON s.event_id = e.event_id " +
+			"WHERE s.volunteer_id = ? " +
+			"  AND e.event_end < NOW() " +
+			"GROUP BY e.event_id " +         
+			"ORDER BY e.event_start DESC " +  
+			"LIMIT 5";                        
+	
 		try (PreparedStatement ps = db.conn.prepareStatement(sql)) {
 			ps.setInt(1, userId);
-
+	
 			try (ResultSet rs = ps.executeQuery()) {
 				while (rs.next()) {
+	
 					int eventId = rs.getInt("event_id");
 					String eventName = rs.getString("event_name");
 					String eventLocation = rs.getString("event_location");
-
-					// null-safe timestamp → LocalDateTime
+	
 					LocalDateTime start = null;
-					java.sql.Timestamp tsStart = rs.getTimestamp("event_start");
-					if (tsStart != null)
-						start = tsStart.toLocalDateTime();
-
+					var t1 = rs.getTimestamp("event_start");
+					if (t1 != null) start = t1.toLocalDateTime();
+	
 					LocalDateTime end = null;
-					java.sql.Timestamp tsEnd = rs.getTimestamp("event_end");
-					if (tsEnd != null)
-						end = tsEnd.toLocalDateTime();
-
-					int volunteers = rs.getInt("event_volunteers");
+					var t2 = rs.getTimestamp("event_end");
+					if (t2 != null) end = t2.toLocalDateTime();
+	
+					int vols = rs.getInt("event_volunteers");
 					String desc = rs.getString("event_description");
-
-					Event e = new Event(eventId, eventName, eventLocation, start, end, volunteers, desc);
-					list.add(e);
+	
+					list.add(new Event(eventId, eventName, eventLocation, start, end, vols, desc));
 				}
 			}
 		} catch (Exception ex) {
-			System.err.println("Error loading past events for user " + userId + ": " + ex.getMessage());
+			System.err.println("Error loading past events: " + ex.getMessage());
 			ex.printStackTrace(System.err);
 		}
-
+	
 		return list;
 	}
+	
+	
 
 	public static boolean usernameExists(String username) {
 		String sql = "SELECT COUNT(*) FROM `user` WHERE `user_name` = ?";
@@ -409,7 +409,5 @@ public class DB {
 			ex.printStackTrace();
 		}
 	}
-
-	
 
 }
