@@ -69,6 +69,10 @@ public class EventsPage {
 
         DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("h:mm a");
 
+        Label error = new Label();
+        error.setTextFill(Color.GREEN);
+        error.setFont(MainFrame.TABLE_BODY_FONT);
+    
         if (todaysEvents.isEmpty()) {
             Label none = new Label("No events scheduled for today.");
             none.setFont(MainFrame.TABLE_BODY_FONT);
@@ -132,15 +136,21 @@ public class EventsPage {
                     if (signUpButton.getText().equals("Sign Up")) {
                         DB.addUserToEvent(userId, ev.getEventId()); // Add the user to the event
                         signUpButton.setText("Sign Out");
+                        error.setTextFill(Color.GREEN);
+                        error.setText("Successfully signed up for event: " + ev.getEventName());
                         System.out.println("Successfully signed up for event: " + ev.getEventName());
                     } else {
                         DB.removeUserFromEvent(userId, ev.getEventId()); // Remove the user from the event
                         signUpButton.setText("Sign Up");
+                        error.setTextFill(Color.RED);
+                        error.setText("Successfully signed out from event: " + ev.getEventName());
                         System.out.println("Successfully signed out from event: " + ev.getEventName());
                     }
                 });
 
                 gp.add(signUpButton, 0, row); // Add sign-up button
+                gp.add(error, 0, row); // Add sign-up button
+
 
                 row++;
             }
@@ -149,18 +159,14 @@ public class EventsPage {
         Button btBack = new Button("Back");
         btBack.setOnAction(e -> VolunteerPage.showVolunteerPage(stage));
 
-        HBox hbox = new HBox();
-        hbox.setPadding(new Insets(30, 0, 0, 0));
-        hbox.setAlignment(Pos.TOP_CENTER);
-        hbox.getChildren().addAll(btBack);
-
         Label pageTitle = new Label("Today's Events");
         pageTitle.setFont(MainFrame.PAGE_HEADING_FONT);
         pageTitle.setPadding(new Insets(0, 0, 30, 0));
 
         VBox vbox = new VBox();
+        vbox.setSpacing(20);
         vbox.setAlignment(Pos.TOP_CENTER);
-        vbox.getChildren().addAll(pageTitle, gp, hbox);
+        vbox.getChildren().addAll(pageTitle, gp, error, btBack);
 
         Scene scene = new Scene(vbox, 600, 400);
         stage.setScene(scene);

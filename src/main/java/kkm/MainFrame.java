@@ -24,7 +24,7 @@ public class MainFrame extends Application {
 
     public void start(Stage primaryStage) {
         loadMenu(primaryStage);
-    }
+    }  
 
     public static void loadMenu(Stage stage) {
         Button btLogin = new Button("  User Login  ");
