@@ -26,11 +26,13 @@ public class HoursPage {
         String userName = Session.getUserName();
         String displayName = (userName == null || userName.isEmpty()) ? ("User #" + userId) : userName;
 
-        ArrayList<Event> pastEvents = DB.loadPastEventsForUser(userId);
+        // Get the event signups for the user, including start and end times of signups
+        ArrayList<EventSignup> pastEventSignups = DB.loadPastEventSignupsForUser(userId);
 
         double totalHours = 0.0;
-        for (Event e : pastEvents) {
-            totalHours += computeHours(e.getEventStart(), e.getEventEnd());
+        for (EventSignup signup : pastEventSignups) {
+            // Calculate the hours based on event signup start and end time
+            totalHours += computeHours(signup.getEventSignupStartTime(), signup.getEventSignupEndTime());
         }
 
         VBox root = new VBox();
@@ -89,14 +91,14 @@ public class HoursPage {
         DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("h:mm a");
 
-        if (pastEvents == null || pastEvents.isEmpty()) {
+        if (pastEventSignups == null || pastEventSignups.isEmpty()) {
             Label none = new Label("No past events recorded.");
             none.setFont(MainFrame.TABLE_BODY_FONT);
             gp.add(none, 0, row, 6, 1);
         } else {
-            pastEvents.sort((a, b) -> {
-                LocalDateTime as = a.getEventStart();
-                LocalDateTime bs = b.getEventStart();
+            pastEventSignups.sort((a, b) -> {
+                LocalDateTime as = a.getEventSignupStartTime();
+                LocalDateTime bs = b.getEventSignupStartTime();
                 if (as == null && bs == null)
                     return 0;
                 if (as == null)
@@ -106,36 +108,21 @@ public class HoursPage {
                 return bs.compareTo(as);
             });
 
-            for (Event e : pastEvents) {
-                LocalDateTime s = e.getEventStart();
-                LocalDateTime ed = e.getEventEnd();
-                String dateStr;
-                if (s == null) {
-                    dateStr = "-";
-                } else {
-                    dateStr = s.toLocalDate().format(dateFmt);
-                }
-                String startStr;
-                if (s == null) {
-                    startStr = "-";
-                } else {
-                    startStr = s.format(timeFmt);
-                }
-                String endStr;
-                if (ed == null) {
-                    endStr = "-";
-                } else {
-                    endStr = ed.format(timeFmt);
-                }
+            for (EventSignup signup : pastEventSignups) {
+                LocalDateTime s = signup.getEventSignupStartTime();
+                LocalDateTime ed = signup.getEventSignupEndTime();
+                String dateStr = (s == null) ? "-" : s.toLocalDate().format(dateFmt);
+                String startStr = (s == null) ? "-" : s.format(timeFmt);
+                String endStr = (ed == null) ? "-" : ed.format(timeFmt);
                 double hrs = computeHours(s, ed);
 
                 Label dateL = new Label(dateStr);
                 dateL.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(dateL, 0, row);
-                Label eventL = new Label(safe(e.getEventName()));
+                Label eventL = new Label(safe(signup.getEventName()));
                 eventL.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(eventL, 1, row);
-                Label locL = new Label(safe(e.getEventLocation()));
+                Label locL = new Label(safe(signup.getEventLocation()));
                 locL.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(locL, 2, row);
                 Label startL = new Label(startStr);
@@ -169,25 +156,7 @@ public class HoursPage {
     }
 
     private static String safe(String s) {
-        if (s == null) {
-            return "";
-        }
-        return s;
-    }
-    
-    LocalDateTime signupStart = e.getEventSignupStartTime();  
-    LocalDateTime signupEnd = e.getEventSignupEndTime();  
-
-    // Call computeHours method with these values
-    double hours = computeHours(signupStart, signupEnd);
-
-    private static double computeHours(LocalDateTime start, LocalDateTime end) {
-        if (start == null || end == null)
-            return 0.0;
-        if (end.isBefore(start))
-            return 0.0;
-        double minutes = Duration.between(start, end).toMinutes();
-        return minutes / 60.0;
+        return (s == null) ? "" : s;
     }
 
     private static double computeHours(LocalDateTime signupStart, LocalDateTime signupEnd) {

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Properties;
 
 import kkm.model.Event;
+import kkm.model.EventSignup;
 import kkm.model.League;
 import kkm.model.User;
 
@@ -214,42 +215,44 @@ public class DB {
 		return null;
 	}
 
-	// Load the past 5 most recent events attended by a user (events whose end time is before now).
+	// Load the past 5 most recent events attended by a user (events whose end time
+	// is before now).
 	public static ArrayList<Event> loadPastEventsForUser(int userId) {
 		ArrayList<Event> list = new ArrayList<>();
-	
-		String sql =
-			"SELECT e.event_id, e.event_name, e.event_location, e.event_start, e.event_end, " +
-			"       e.event_volunteers, e.event_description " +
-			"FROM event e " +
-			"JOIN event_signup s ON s.event_id = e.event_id " +
-			"WHERE s.volunteer_id = ? " +
-			"  AND e.event_end < NOW() " +
-			"GROUP BY e.event_id " +         
-			"ORDER BY e.event_start DESC " +  
-			"LIMIT 5";                        
-	
+
+		String sql = "SELECT e.event_id, e.event_name, e.event_location, e.event_start, e.event_end, " +
+				"       e.event_volunteers, e.event_description " +
+				"FROM event e " +
+				"JOIN event_signup s ON s.event_id = e.event_id " +
+				"WHERE s.volunteer_id = ? " +
+				"  AND e.event_end < NOW() " +
+				"GROUP BY e.event_id " +
+				"ORDER BY e.event_start DESC " +
+				"LIMIT 5";
+
 		try (PreparedStatement ps = db.conn.prepareStatement(sql)) {
 			ps.setInt(1, userId);
-	
+
 			try (ResultSet rs = ps.executeQuery()) {
 				while (rs.next()) {
-	
+
 					int eventId = rs.getInt("event_id");
 					String eventName = rs.getString("event_name");
 					String eventLocation = rs.getString("event_location");
-	
+
 					LocalDateTime start = null;
 					var t1 = rs.getTimestamp("event_start");
-					if (t1 != null) start = t1.toLocalDateTime();
-	
+					if (t1 != null)
+						start = t1.toLocalDateTime();
+
 					LocalDateTime end = null;
 					var t2 = rs.getTimestamp("event_end");
-					if (t2 != null) end = t2.toLocalDateTime();
-	
+					if (t2 != null)
+						end = t2.toLocalDateTime();
+
 					int vols = rs.getInt("event_volunteers");
 					String desc = rs.getString("event_description");
-	
+
 					list.add(new Event(eventId, eventName, eventLocation, start, end, vols, desc));
 				}
 			}
@@ -257,11 +260,9 @@ public class DB {
 			System.err.println("Error loading past events: " + ex.getMessage());
 			ex.printStackTrace(System.err);
 		}
-	
+
 		return list;
 	}
-	
-	
 
 	public static boolean usernameExists(String username) {
 		String sql = "SELECT COUNT(*) FROM `user` WHERE `user_name` = ?";
@@ -408,6 +409,60 @@ public class DB {
 			System.err.println("Error updating user status: " + ex.getMessage());
 			ex.printStackTrace();
 		}
+	}
+
+	public static ArrayList<EventSignup> loadPastEventSignupsForUser(int userId) {
+		ArrayList<EventSignup> list = new ArrayList<>();
+	
+		// SQL query to fetch past event signups for the user
+		String sql = "SELECT DISTINCT es.volunteer_id, es.event_id, es.event_signup_start_time, es.event_signup_end_time, " +
+					 "e.event_name, e.event_location, DATE(es.event_signup_start_time) AS event_date " +
+					 "FROM event_signup es " +
+					 "JOIN event e ON es.event_id = e.event_id " +
+					 "WHERE es.volunteer_id = ? " +
+					 "AND es.event_signup_end_time < CURRENT_TIMESTAMP " +  // Ensure the signup has ended
+					 "ORDER BY es.event_signup_start_time DESC";  // Sort by signup start time
+	
+		try (PreparedStatement ps = db.conn.prepareStatement(sql)) {
+			ps.setInt(1, userId);  // Set the userId parameter
+	
+			try (ResultSet rs = ps.executeQuery()) {
+				while (rs.next()) {
+					int volunteerId = rs.getInt("volunteer_id");
+					int eventId = rs.getInt("event_id");
+					LocalDateTime signupStart = rs.getTimestamp("event_signup_start_time").toLocalDateTime();
+					LocalDateTime signupEnd = rs.getTimestamp("event_signup_end_time").toLocalDateTime();
+					String eventName = rs.getString("event_name");
+					String eventLocation = rs.getString("event_location");
+					LocalDateTime eventDate = signupStart.toLocalDate().atStartOfDay(); // Ensure the event is unique per day
+	
+					// Create EventSignup object and add it to the list
+					EventSignup eventSignup = new EventSignup(volunteerId, eventId, signupStart, signupEnd);
+					eventSignup.setEventName(eventName);
+					eventSignup.setEventLocation(eventLocation);
+	
+					// Filter out duplicate event signups for the same day
+					if (!isDuplicate(list, eventId, eventDate)) {
+						list.add(eventSignup);
+					}
+				}
+			}
+		} catch (SQLException ex) {
+			System.err.println("Error loading past event signups for user " + userId + ": " + ex.getMessage());
+			ex.printStackTrace(System.err);
+		}
+	
+		return list;  // Return the list of EventSignup objects
+	}
+	
+	// Helper method to check for duplicate event signups on the same day
+	private static boolean isDuplicate(ArrayList<EventSignup> list, int eventId, LocalDateTime eventDate) {
+		for (EventSignup es : list) {
+			if (es.getEventId() == eventId && es.getEventSignupStartTime().toLocalDate().isEqual(eventDate.toLocalDate())) {
+				return true;  // Duplicate found
+			}
+		}
+		return false;  // No duplicate
 	}
 
 }

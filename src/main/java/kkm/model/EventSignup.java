@@ -3,42 +3,19 @@ package kkm.model;
 import java.time.LocalDateTime;
 
 public class EventSignup {
-    private int eventSignupId;
     private int volunteerId;
     private int eventId;
     private LocalDateTime eventSignupStartTime;
     private LocalDateTime eventSignupEndTime;
-    private int eventSignupStatus; 
+    private String eventName;
+    private String eventLocation;
 
-    public EventSignup(int eventSignupId, int volunteerId, int eventId, 
-                       LocalDateTime eventSignupStartTime, LocalDateTime eventSignupEndTime, 
-                       int eventSignupStatus) {
-        this.eventSignupId = eventSignupId;
+    // Constructor
+    public EventSignup(int volunteerId, int eventId, LocalDateTime eventSignupStartTime,LocalDateTime eventSignupEndTime) {
         this.volunteerId = volunteerId;
         this.eventId = eventId;
         this.eventSignupStartTime = eventSignupStartTime;
         this.eventSignupEndTime = eventSignupEndTime;
-        this.eventSignupStatus = eventSignupStatus;
-    }
-
-    public EventSignup(int volunteerId, int eventId, 
-                       LocalDateTime eventSignupStartTime, LocalDateTime eventSignupEndTime, 
-                       int eventSignupStatus) {
-        this.eventSignupId = -1; 
-        this.volunteerId = volunteerId;
-        this.eventId = eventId;
-        this.eventSignupStartTime = eventSignupStartTime;
-        this.eventSignupEndTime = eventSignupEndTime;
-        this.eventSignupStatus = eventSignupStatus;
-    }
-
-    // Getters and setters for all fields
-    public int getEventSignupId() {
-        return eventSignupId;
-    }
-
-    public void setEventSignupId(int eventSignupId) {
-        this.eventSignupId = eventSignupId;
     }
 
     public int getVolunteerId() {
@@ -73,15 +50,19 @@ public class EventSignup {
         this.eventSignupEndTime = eventSignupEndTime;
     }
 
-    public int getEventSignupStatus() {
-        return eventSignupStatus;
+    public String getEventName() {
+        return eventName;
     }
 
-    public void setEventSignupStatus(int eventSignupStatus) {
-        this.eventSignupStatus = eventSignupStatus;
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
     }
 
-    public boolean isSignedIn() {
-        return this.eventSignupStatus == 1;
+    public String getEventLocation() {
+        return eventLocation;
+    }
+
+    public void setEventLocation(String eventLocation) {
+        this.eventLocation = eventLocation;
     }
 }
