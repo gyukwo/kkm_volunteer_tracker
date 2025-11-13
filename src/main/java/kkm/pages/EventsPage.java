@@ -90,7 +90,7 @@ public class EventsPage {
                 if (ev.getEventStart() == null) {
                     startStr = "-";
                 } else {
-                    startStr = ev.getEventEnd().format(timeFmt);
+                    startStr = ev.getEventStart().format(timeFmt);
                 }
 
                 String endStr = "";

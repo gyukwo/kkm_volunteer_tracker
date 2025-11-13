@@ -18,13 +18,9 @@ import kkm.DB;
 import kkm.MainFrame;
 import kkm.Session;
 import kkm.model.Event;
+import kkm.model.EventSignup;
 
 public class HoursPage {
-
-    /**
-     * Shows a page with the user's name, total hours, and list of past events
-     * attended.
-     */
     public static void showUserHours(Stage stage) {
         int userId = Session.getUserId();
         String userName = Session.getUserName();
@@ -113,9 +109,24 @@ public class HoursPage {
             for (Event e : pastEvents) {
                 LocalDateTime s = e.getEventStart();
                 LocalDateTime ed = e.getEventEnd();
-                String dateStr = (s == null) ? "-" : s.toLocalDate().format(dateFmt);
-                String startStr = (s == null) ? "-" : s.format(timeFmt);
-                String endStr = (ed == null) ? "-" : ed.format(timeFmt);
+                String dateStr;
+                if (s == null) {
+                    dateStr = "-";
+                } else {
+                    dateStr = s.toLocalDate().format(dateFmt);
+                }
+                String startStr;
+                if (s == null) {
+                    startStr = "-";
+                } else {
+                    startStr = s.format(timeFmt);
+                }
+                String endStr;
+                if (ed == null) {
+                    endStr = "-";
+                } else {
+                    endStr = ed.format(timeFmt);
+                }
                 double hrs = computeHours(s, ed);
 
                 Label dateL = new Label(dateStr);
@@ -158,15 +169,35 @@ public class HoursPage {
     }
 
     private static String safe(String s) {
-        return (s == null) ? "" : s;
+        if (s == null) {
+            return "";
+        }
+        return s;
     }
+    
+    LocalDateTime signupStart = e.getEventSignupStartTime();  
+    LocalDateTime signupEnd = e.getEventSignupEndTime();  
+
+    // Call computeHours method with these values
+    double hours = computeHours(signupStart, signupEnd);
 
     private static double computeHours(LocalDateTime start, LocalDateTime end) {
         if (start == null || end == null)
             return 0.0;
         if (end.isBefore(start))
             return 0.0;
-        long minutes = Duration.between(start, end).toMinutes();
+        double minutes = Duration.between(start, end).toMinutes();
+        return minutes / 60.0;
+    }
+
+    private static double computeHours(LocalDateTime signupStart, LocalDateTime signupEnd) {
+        if (signupStart == null || signupEnd == null) {
+            return 0.0;
+        } 
+        if (signupEnd.isBefore(signupStart)) {
+            return 0.0;
+        }
+        double minutes = Duration.between(signupStart, signupEnd).toMinutes();
         return minutes / 60.0;
     }
 }
