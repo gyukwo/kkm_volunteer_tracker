@@ -92,7 +92,12 @@ public class SignUpPage {
             } else {
                 error.setText("Account created successfully!");
                 Session.signIn(id, username, LocalDateTime.now());
-                VolunteerPage.showVolunteerPage(stage);
+                if(userType == "volun") {
+                    VolunteerPage.showVolunteerPage(stage);
+                }
+                else if(userType == "admin") {
+                    AdminPage.showAdminPage(stage);
+                }
             }
         });
 

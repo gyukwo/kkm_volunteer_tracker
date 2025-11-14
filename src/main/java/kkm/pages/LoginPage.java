@@ -69,8 +69,15 @@ public class LoginPage {
                 return;
             }
 
+            String userType = DB.getUserTypeByUserId(userId);
             Session.signIn(userId, username, LocalDateTime.now());
-            VolunteerPage.showVolunteerPage(stage);
+            if (userType.equals("volun")){
+                VolunteerPage.showVolunteerPage(stage);
+            }
+            else if (userType.equals("admin")) {
+                AdminPage.showAdminPage(stage);
+            }
+
         });
 
         btBack.setOnAction(e -> MainFrame.loadMenu(stage));

@@ -2,6 +2,8 @@ package kkm.pages;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
@@ -17,7 +19,6 @@ import javafx.stage.Stage;
 import kkm.DB;
 import kkm.MainFrame;
 import kkm.Session;
-import kkm.model.Event;
 import kkm.model.EventSignup;
 
 public class HoursPage {
@@ -112,8 +113,21 @@ public class HoursPage {
                 LocalDateTime s = signup.getEventSignupStartTime();
                 LocalDateTime ed = signup.getEventSignupEndTime();
                 String dateStr = (s == null) ? "-" : s.toLocalDate().format(dateFmt);
-                String startStr = (s == null) ? "-" : s.format(timeFmt);
-                String endStr = (ed == null) ? "-" : ed.format(timeFmt);
+
+                ZoneId est = ZoneId.of("America/New_York");
+
+                String startStr = "-";
+                if (s != null) {
+                    ZonedDateTime estStart = s.atZone(ZoneId.systemDefault()).withZoneSameInstant(est);
+                    startStr = estStart.format(timeFmt);
+                }
+
+                String endStr = "-";
+                if (ed != null) {
+                    ZonedDateTime estEnd = ed.atZone(ZoneId.systemDefault()).withZoneSameInstant(est);
+                    endStr = estEnd.format(timeFmt);
+                }
+
                 double hrs = computeHours(s, ed);
 
                 Label dateL = new Label(dateStr);
@@ -162,7 +176,7 @@ public class HoursPage {
     private static double computeHours(LocalDateTime signupStart, LocalDateTime signupEnd) {
         if (signupStart == null || signupEnd == null) {
             return 0.0;
-        } 
+        }
         if (signupEnd.isBefore(signupStart)) {
             return 0.0;
         }

@@ -317,6 +317,24 @@ public class DB {
 		return -1;
 	}
 
+	public static String getUserTypeByUserId(int userId) {
+		String sql = "SELECT user_type FROM `user` WHERE user_id = ?";
+		try (PreparedStatement ps = db.conn.prepareStatement(sql)) {
+			ps.setInt(1, userId);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					return rs.getString("user_type");
+				}
+			}
+		} catch (Exception ex) {
+			System.err.println("Error getting user type: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+		}
+	
+		return null; 
+	}
+
 	public static int getUserIdByUsername(String username) {
 		String sql = "SELECT user_id FROM `user` WHERE `user_name` = ?";
 		try (PreparedStatement ps = db.conn.prepareStatement(sql)) {
@@ -387,7 +405,7 @@ public class DB {
 			ps.setInt(2, eventId);
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
-					return rs.getInt(1) > 0; // If count is greater than 0, the user is signed up
+					return rs.getInt(1) > 0; 
 				}
 			}
 		} catch (SQLException ex) {
@@ -400,7 +418,7 @@ public class DB {
 	public static void updateUserStatusForEvent(int volunteerId, int eventId, int status) {
 		String queryString = "UPDATE event_signup SET event_signup_status = ? WHERE volunteer_id = ? AND event_id = ?";
 		try (PreparedStatement ps = db.conn.prepareStatement(queryString)) {
-			ps.setInt(1, status); // 1 for signed in, 0 for signed out
+			ps.setInt(1, status); 
 			ps.setInt(2, volunteerId);
 			ps.setInt(3, eventId);
 			ps.executeUpdate();
@@ -420,11 +438,11 @@ public class DB {
 					 "FROM event_signup es " +
 					 "JOIN event e ON es.event_id = e.event_id " +
 					 "WHERE es.volunteer_id = ? " +
-					 "AND es.event_signup_end_time < CURRENT_TIMESTAMP " +  // Ensure the signup has ended
-					 "ORDER BY es.event_signup_start_time DESC";  // Sort by signup start time
+					 "AND es.event_signup_end_time < CURRENT_TIMESTAMP " +
+					 "ORDER BY es.event_signup_start_time DESC"; 
 	
 		try (PreparedStatement ps = db.conn.prepareStatement(sql)) {
-			ps.setInt(1, userId);  // Set the userId parameter
+			ps.setInt(1, userId);  
 	
 			try (ResultSet rs = ps.executeQuery()) {
 				while (rs.next()) {
@@ -434,14 +452,12 @@ public class DB {
 					LocalDateTime signupEnd = rs.getTimestamp("event_signup_end_time").toLocalDateTime();
 					String eventName = rs.getString("event_name");
 					String eventLocation = rs.getString("event_location");
-					LocalDateTime eventDate = signupStart.toLocalDate().atStartOfDay(); // Ensure the event is unique per day
+					LocalDateTime eventDate = signupStart.toLocalDate().atStartOfDay(); 
 	
-					// Create EventSignup object and add it to the list
 					EventSignup eventSignup = new EventSignup(volunteerId, eventId, signupStart, signupEnd);
 					eventSignup.setEventName(eventName);
 					eventSignup.setEventLocation(eventLocation);
 	
-					// Filter out duplicate event signups for the same day
 					if (!isDuplicate(list, eventId, eventDate)) {
 						list.add(eventSignup);
 					}
@@ -452,17 +468,16 @@ public class DB {
 			ex.printStackTrace(System.err);
 		}
 	
-		return list;  // Return the list of EventSignup objects
+		return list;  
 	}
 	
-	// Helper method to check for duplicate event signups on the same day
 	private static boolean isDuplicate(ArrayList<EventSignup> list, int eventId, LocalDateTime eventDate) {
 		for (EventSignup es : list) {
 			if (es.getEventId() == eventId && es.getEventSignupStartTime().toLocalDate().isEqual(eventDate.toLocalDate())) {
-				return true;  // Duplicate found
+				return true;  
 			}
 		}
-		return false;  // No duplicate
+		return false;  
 	}
 
 }
