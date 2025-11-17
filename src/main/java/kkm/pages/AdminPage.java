@@ -33,7 +33,7 @@ public class AdminPage {
         volunteerList.setOnAction(e -> EventsPage.showDailyEvents(stage));
 
         Button addEventsButton = new Button("Add Events");
-        addEventsButton.setOnAction(e -> EventsPage.showDailyEvents(stage));
+        addEventsButton.setOnAction(e -> AddEventPage.showAddEvent(stage));
 
         Button seeEventsButton = new Button("See Events");
         seeEventsButton.setOnAction(e -> EventsPage.showDailyEvents(stage));
