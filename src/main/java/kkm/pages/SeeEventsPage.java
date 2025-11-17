@@ -16,10 +16,9 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import kkm.DB;
 import kkm.MainFrame;
-import kkm.Session;
 import kkm.model.Event;
 
-public class EventsPage {
+public class SeeEventsPage {
 
     public static void showDailyEvents(Stage stage) {
         ArrayList<Event> allEvents = DB.loadEvents();
@@ -42,55 +41,58 @@ public class EventsPage {
         nameLabel.setTextFill(Color.DARKGREEN);
         nameLabel.setFont(MainFrame.TABLE_BODY_FONT);
         gp.add(nameLabel, 1, row);
+
         Label locLabel = new Label("Location");
         locLabel.setTextFill(Color.DARKGREEN);
         locLabel.setFont(MainFrame.TABLE_BODY_FONT);
         gp.add(locLabel, 2, row);
+
         Label startLabel = new Label("Start");
         startLabel.setTextFill(Color.DARKGREEN);
         startLabel.setFont(MainFrame.TABLE_BODY_FONT);
         gp.add(startLabel, 3, row);
+
         Label endLabel = new Label("End");
         endLabel.setTextFill(Color.DARKGREEN);
         endLabel.setFont(MainFrame.TABLE_BODY_FONT);
         gp.add(endLabel, 4, row);
+
         Label volsLabel = new Label("# Volunteers");
         volsLabel.setTextFill(Color.DARKGREEN);
         volsLabel.setFont(MainFrame.TABLE_BODY_FONT);
         gp.add(volsLabel, 5, row);
+
         Label descLabel = new Label("Description");
         descLabel.setTextFill(Color.DARKGREEN);
         descLabel.setFont(MainFrame.TABLE_BODY_FONT);
         gp.add(descLabel, 6, row);
+
         row++;
 
         DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("h:mm a");
 
-        Label error = new Label();
-        error.setTextFill(Color.GREEN);
-        error.setFont(MainFrame.TABLE_BODY_FONT);
-
         if (todaysEvents.isEmpty()) {
             Label none = new Label("No events scheduled for today.");
             none.setFont(MainFrame.TABLE_BODY_FONT);
-            gp.add(none, 0, row, 6, 1);
+            gp.add(none, 0, row, 7, 1);
         } else {
             for (Event ev : todaysEvents) {
                 Label name = new Label(ev.getEventName());
                 name.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(name, 1, row);
+
                 Label loc = new Label(ev.getEventLocation());
                 loc.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(loc, 2, row);
 
-                String startStr = "";
+                String startStr;
                 if (ev.getEventStart() == null) {
                     startStr = "-";
                 } else {
                     startStr = ev.getEventStart().format(timeFmt);
                 }
 
-                String endStr = "";
+                String endStr;
                 if (ev.getEventEnd() == null) {
                     endStr = "-";
                 } else {
@@ -100,9 +102,11 @@ public class EventsPage {
                 Label start = new Label(startStr);
                 start.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(start, 3, row);
+
                 Label end = new Label(endStr);
                 end.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(end, 4, row);
+
                 Label vols = new Label(String.valueOf(ev.getEventVolunteers()));
                 vols.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(vols, 5, row);
@@ -115,56 +119,33 @@ public class EventsPage {
                 desc.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(desc, 6, row);
 
-                int userId = Session.getUserId();
-
-                String text = "";
-
-                if (DB.isUserSignedUpForEvent(userId, ev.getEventId())) {
-                    text = "Sign Out";
-                } else {
-                    text = "Sign Up";
-                }
-
-                Button signUpButton = new Button(text);
-
-                signUpButton.setOnAction(e -> {
-                    if (signUpButton.getText().equals("Sign Up")) {
-                        DB.addUserToEvent(userId, ev.getEventId()); 
-                        signUpButton.setText("Sign Out");
-                        error.setTextFill(Color.GREEN);
-                        error.setText("Successfully signed up for event: " + ev.getEventName());
-                        System.out.println("Successfully signed up for event: " + ev.getEventName());
-                    } else {
-                        DB.removeUserFromEvent(userId, ev.getEventId()); 
-                        signUpButton.setText("Sign Up");
-                        error.setTextFill(Color.RED);
-                        error.setText("Successfully signed out from event: " + ev.getEventName());
-                        System.out.println("Successfully signed out from event: " + ev.getEventName());
-                    }
+                Button viewButton = new Button("View");
+                viewButton.setOnAction(e -> {
+                    AdminEventPage.showEvent(stage, ev);
+                    //System.out.println("Admin viewing event: " + ev.getEventName() + " (ID=" + ev.getEventId() + ")");
                 });
 
-                gp.add(signUpButton, 0, row); 
-                gp.add(error, 0, row); 
+                gp.add(viewButton, 0, row);
 
                 row++;
             }
         }
 
         Button btBack = new Button("Back");
-        btBack.setOnAction(e -> VolunteerPage.showVolunteerPage(stage));
+        btBack.setOnAction(e -> AdminPage.showAdminPage(stage));
 
-        Label pageTitle = new Label("Today's Events");
+        Label pageTitle = new Label("Today's Events (Admin View)");
         pageTitle.setFont(MainFrame.PAGE_HEADING_FONT);
         pageTitle.setPadding(new Insets(0, 0, 30, 0));
 
         VBox vbox = new VBox();
         vbox.setSpacing(20);
         vbox.setAlignment(Pos.TOP_CENTER);
-        vbox.getChildren().addAll(pageTitle, gp, error, btBack);
+        vbox.getChildren().addAll(pageTitle, gp, btBack);
 
-        Scene scene = new Scene(vbox, 600, 400);
+        Scene scene = new Scene(vbox, 800, 400);
         stage.setScene(scene);
-        stage.setTitle("Events Page");
+        stage.setTitle("See Events (Admin)");
         stage.show();
     }
 }

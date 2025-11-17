@@ -30,13 +30,13 @@ public class AdminPage {
         statusText.setStyle("-fx-font-size: 14px;");
 
         Button volunteerList = new Button("Volunteer List");
-        volunteerList.setOnAction(e -> EventsPage.showDailyEvents(stage));
+        volunteerList.setOnAction(e -> VolunteerListPage.showVolunteerList(stage));
 
         Button addEventsButton = new Button("Add Events");
         addEventsButton.setOnAction(e -> AddEventPage.showAddEvent(stage));
 
         Button seeEventsButton = new Button("See Events");
-        seeEventsButton.setOnAction(e -> EventsPage.showDailyEvents(stage));
+        seeEventsButton.setOnAction(e -> SeeEventsPage.showDailyEvents(stage));
 
         Button signOutButton = new Button("Sign Out");
         signOutButton.setOnAction(e -> {

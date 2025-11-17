@@ -22,22 +22,26 @@ import kkm.Session;
 import kkm.model.EventSignup;
 
 public class HoursPage {
+
     public static void showUserHours(Stage stage) {
         int userId = Session.getUserId();
         String userName = Session.getUserName();
-        String displayName = (userName == null || userName.isEmpty()) ? ("User #" + userId) : userName;
+        String displayName = (userName == null || userName.isEmpty())
+                ? ("User #" + userId)
+                : userName;
 
-        // Get the event signups for the user, including start and end times of signups
+        // Load past event signups for this user
         ArrayList<EventSignup> pastEventSignups = DB.loadPastEventSignupsForUser(userId);
 
         double totalHours = 0.0;
         for (EventSignup signup : pastEventSignups) {
-            // Calculate the hours based on event signup start and end time
-            totalHours += computeHours(signup.getEventSignupStartTime(), signup.getEventSignupEndTime());
+            totalHours += computeHours(signup.getEventSignupStartTime(),
+                                       signup.getEventSignupEndTime());
         }
 
         VBox root = new VBox();
         root.setAlignment(Pos.TOP_CENTER);
+        root.setPadding(new Insets(20));
 
         Label pageTitle = new Label("Volunteer Hours");
         pageTitle.setFont(MainFrame.PAGE_HEADING_FONT);
@@ -51,6 +55,7 @@ public class HoursPage {
         Label nameH = new Label("Volunteer:");
         nameH.setFont(MainFrame.TABLE_HEADING_FONT);
         header.add(nameH, 0, 0);
+
         Label nameV = new Label(displayName);
         nameV.setFont(MainFrame.TABLE_BODY_FONT);
         header.add(nameV, 1, 0);
@@ -58,6 +63,7 @@ public class HoursPage {
         Label totalH = new Label("Total Hours:");
         totalH.setFont(MainFrame.TABLE_HEADING_FONT);
         header.add(totalH, 0, 1);
+
         Label totalV = new Label(String.format("%.2f", totalHours));
         totalV.setFont(MainFrame.TABLE_BODY_FONT);
         header.add(totalV, 1, 1);
@@ -72,59 +78,71 @@ public class HoursPage {
         Label dateH = new Label("Date");
         dateH.setFont(MainFrame.TABLE_HEADING_FONT);
         gp.add(dateH, 0, row);
+
         Label nameEH = new Label("Event");
         nameEH.setFont(MainFrame.TABLE_HEADING_FONT);
         gp.add(nameEH, 1, row);
+
         Label locH = new Label("Location");
         locH.setFont(MainFrame.TABLE_HEADING_FONT);
         gp.add(locH, 2, row);
+
         Label startH = new Label("Start");
         startH.setFont(MainFrame.TABLE_HEADING_FONT);
         gp.add(startH, 3, row);
+
         Label endH = new Label("End");
         endH.setFont(MainFrame.TABLE_HEADING_FONT);
         gp.add(endH, 4, row);
+
         Label hoursH = new Label("Hours");
         hoursH.setFont(MainFrame.TABLE_HEADING_FONT);
         gp.add(hoursH, 5, row);
+
         row++;
 
         DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("h:mm a");
+
+        ZoneId utc = ZoneId.of("UTC");
+        ZoneId est = ZoneId.of("America/New_York");
 
         if (pastEventSignups == null || pastEventSignups.isEmpty()) {
             Label none = new Label("No past events recorded.");
             none.setFont(MainFrame.TABLE_BODY_FONT);
             gp.add(none, 0, row, 6, 1);
         } else {
+            // Sort by signup start time (most recent first)
             pastEventSignups.sort((a, b) -> {
                 LocalDateTime as = a.getEventSignupStartTime();
                 LocalDateTime bs = b.getEventSignupStartTime();
-                if (as == null && bs == null)
-                    return 0;
-                if (as == null)
-                    return 1;
-                if (bs == null)
-                    return -1;
+                if (as == null && bs == null) return 0;
+                if (as == null) return 1;
+                if (bs == null) return -1;
                 return bs.compareTo(as);
             });
 
             for (EventSignup signup : pastEventSignups) {
                 LocalDateTime s = signup.getEventSignupStartTime();
                 LocalDateTime ed = signup.getEventSignupEndTime();
-                String dateStr = (s == null) ? "-" : s.toLocalDate().format(dateFmt);
 
-                ZoneId est = ZoneId.of("America/New_York");
-
+                String dateStr = "-";
                 String startStr = "-";
+                String endStr = "-";
+
                 if (s != null) {
-                    ZonedDateTime estStart = s.atZone(ZoneId.systemDefault()).withZoneSameInstant(est);
+                    // Treat DB time as UTC, convert to EST
+                    ZonedDateTime utcStart = s.atZone(utc);
+                    ZonedDateTime estStart = utcStart.withZoneSameInstant(est);
+
+                    dateStr = estStart.toLocalDate().format(dateFmt);
                     startStr = estStart.format(timeFmt);
                 }
 
-                String endStr = "-";
                 if (ed != null) {
-                    ZonedDateTime estEnd = ed.atZone(ZoneId.systemDefault()).withZoneSameInstant(est);
+                    ZonedDateTime utcEnd = ed.atZone(utc);
+                    ZonedDateTime estEnd = utcEnd.withZoneSameInstant(est);
+
                     endStr = estEnd.format(timeFmt);
                 }
 
@@ -133,18 +151,23 @@ public class HoursPage {
                 Label dateL = new Label(dateStr);
                 dateL.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(dateL, 0, row);
+
                 Label eventL = new Label(safe(signup.getEventName()));
                 eventL.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(eventL, 1, row);
+
                 Label locL = new Label(safe(signup.getEventLocation()));
                 locL.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(locL, 2, row);
+
                 Label startL = new Label(startStr);
                 startL.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(startL, 3, row);
+
                 Label endL = new Label(endStr);
                 endL.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(endL, 4, row);
+
                 Label hoursL = new Label(String.format("%.2f", hrs));
                 hoursL.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(hoursL, 5, row);
@@ -170,7 +193,10 @@ public class HoursPage {
     }
 
     private static String safe(String s) {
-        return (s == null) ? "" : s;
+        if (s == null) {
+            return "";
+        }
+        return s;
     }
 
     private static double computeHours(LocalDateTime signupStart, LocalDateTime signupEnd) {

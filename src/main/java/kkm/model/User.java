@@ -16,16 +16,14 @@ public class User {
         this.isAdmin = isAdmin;
     }
 
-    // Constructor without ID (for new inserts where DB will generate ID)
     public User(String fullName, String email, String phone, boolean isAdmin) {
         this.userId = -1;
         this.fullName = fullName;
         this.email = email;
         this.phone = phone;
+
         this.isAdmin = isAdmin;
     }
-
-    // --- Getters and Setters ---
     public int getUserId() {
         return userId;
     }

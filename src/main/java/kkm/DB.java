@@ -350,6 +350,25 @@ public class DB {
 		return -1;
 	}
 
+	public static String getUserNameByUserId(int userId) {
+		String sql = "SELECT user_name FROM user WHERE user_id = ?";
+	
+		try (PreparedStatement ps = db.conn.prepareStatement(sql)) {
+			ps.setInt(1, userId);
+	
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					return rs.getString("user_name");
+				}
+			}
+		} catch (Exception ex) {
+			System.err.println("Error getting username: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+		}
+		return null;
+	}
+	
+
 	// Method to insert a new event signup into the event_signup table
 	public static void insertEventSignup(int volunteerId, int eventId, String signupStartTime, String signupEndTime,
 			String signupStatus) {
@@ -479,5 +498,68 @@ public class DB {
 		}
 		return false;  
 	}
+
+	public static ArrayList<EventSignup> loadEventSignupsForEvent(int eventId) {
+    ArrayList<EventSignup> list = new ArrayList<>();
+
+    String sql =
+        "SELECT es.volunteer_id, es.event_id, " +
+        "       es.event_signup_start_time, es.event_signup_end_time, " +
+        "       u.user_name " +
+        "FROM event_signup es " +
+        "JOIN user u ON es.volunteer_id = u.user_id " +
+        "WHERE es.event_id = ? " +
+        "  AND es.event_signup_end_time IS NOT NULL " +
+        "ORDER BY es.event_signup_start_time";
+
+    try (PreparedStatement ps = db.conn.prepareStatement(sql)) {
+        ps.setInt(1, eventId);
+
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                int volunteerId = rs.getInt("volunteer_id");
+                LocalDateTime start = null;
+                LocalDateTime end = null;
+
+                var tsStart = rs.getTimestamp("event_signup_start_time");
+                if (tsStart != null) {
+                    start = tsStart.toLocalDateTime();
+                }
+
+                var tsEnd = rs.getTimestamp("event_signup_end_time");
+                if (tsEnd != null) {
+                    end = tsEnd.toLocalDateTime();
+                }
+
+                EventSignup signup = new EventSignup(volunteerId, eventId, start, end);
+
+                list.add(signup);
+            }
+        }
+    } catch (SQLException ex) {
+        System.err.println("Error loading signups for event " + eventId + ": " + ex.getMessage());
+        ex.printStackTrace(System.err);
+    }
+
+    return list;
+}
+
+public static ArrayList<Integer> loadVolunteerIds() {
+    ArrayList<Integer> list = new ArrayList<>();
+
+    String sql = "SELECT user_id FROM `user` WHERE `user_type` = 'volun' AND `user_status` = 1";
+
+    try (PreparedStatement ps = db.conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            list.add(rs.getInt("user_id"));
+        }
+    } catch (Exception ex) {
+        System.err.println("Error loading volunteer ids: " + ex.getMessage());
+        ex.printStackTrace(System.err);
+    }
+
+    return list;
+}
 
 }

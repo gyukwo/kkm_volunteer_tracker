@@ -5,12 +5,12 @@ import java.time.LocalDateTime;
 public class EventSignup {
     private int volunteerId;
     private int eventId;
+    private String volunteerName;
     private LocalDateTime eventSignupStartTime;
     private LocalDateTime eventSignupEndTime;
     private String eventName;
     private String eventLocation;
 
-    // Constructor
     public EventSignup(int volunteerId, int eventId, LocalDateTime eventSignupStartTime,LocalDateTime eventSignupEndTime) {
         this.volunteerId = volunteerId;
         this.eventId = eventId;
@@ -24,6 +24,14 @@ public class EventSignup {
 
     public void setVolunteerId(int volunteerId) {
         this.volunteerId = volunteerId;
+    }
+
+    public String getVolunteerName() {
+        return volunteerName;
+    }
+    
+    public void setVolunteerName(String volunteerName) {
+        this.volunteerName = volunteerName;
     }
 
     public int getEventId() {

@@ -89,8 +89,8 @@ public class AddEventPage {
             String eventDescription = descF.getText().trim();
 
             if (eventName.isEmpty() || eventLocation.isEmpty() ||
-                eventStart.isEmpty() || eventEnd.isEmpty() ||
-                volsText.isEmpty()) {
+                    eventStart.isEmpty() || eventEnd.isEmpty() ||
+                    volsText.isEmpty()) {
                 error.setText("All fields except description are required.");
                 error.setTextFill(Color.RED);
                 return;
@@ -107,7 +107,7 @@ public class AddEventPage {
 
             try {
                 DB.insertEvent(eventName, eventLocation, eventStart, eventEnd,
-                               eventVolunteers, eventDescription);
+                        eventVolunteers, eventDescription);
                 error.setTextFill(Color.GREEN);
                 error.setText("Event created successfully!");
 
@@ -126,7 +126,6 @@ public class AddEventPage {
 
         btBack.setOnAction(e -> {
             AdminPage.showAdminPage(stage);
-            MainFrame.loadMenu(stage);
         });
 
         HBox actions = new HBox(15, btCreate, btBack);
