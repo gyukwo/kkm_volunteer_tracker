@@ -2,6 +2,8 @@ package kkm.pages;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
@@ -18,9 +20,12 @@ import kkm.DB;
 import kkm.MainFrame;
 import kkm.model.Event;
 import kkm.model.EventSignup;
-import kkm.model.User;
 
 public class AdminEventPage {
+    // time zone stuff from
+    // https://docs.oracle.com/javase/8/docs/api/java/util/TimeZone.html
+    private static final ZoneId UTC = ZoneId.of("UTC");
+    private static final ZoneId NEW_YORK = ZoneId.of("America/New_York");
 
     public static void showEvent(Stage stage, Event event) {
         int eventId = event.getEventId();
@@ -40,28 +45,30 @@ public class AdminEventPage {
         header.setHgap(20);
         header.setVgap(10);
 
+        // date time formatter from
+        // https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html
         DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("h:mm a");
 
         String dateStr;
-        if (event.getEventStart() == null) {
-            dateStr = "-";
-        } else {
-            dateStr = event.getEventStart().toLocalDate().format(dateFmt);
-        }
-
         String startStr;
-        if (event.getEventStart() == null) {
+        String endStr;
+
+        LocalDateTime rawStart = event.getEventStart();
+        LocalDateTime rawEnd = event.getEventEnd();
+
+        if (rawStart == null) {
+            dateStr = "-";
             startStr = "-";
         } else {
-            startStr = event.getEventStart().format(timeFmt);
+            dateStr = rawStart.toLocalDate().format(dateFmt);
+            startStr = rawStart.format(timeFmt);
         }
 
-        String endStr;
-        if (event.getEventEnd() == null) {
+        if (rawEnd == null) {
             endStr = "-";
         } else {
-            endStr = event.getEventEnd().format(timeFmt);
+            endStr = rawEnd.format(timeFmt);
         }
 
         Label dateH = new Label("Date:");
@@ -142,14 +149,16 @@ public class AdminEventPage {
                 if (st == null) {
                     startCell = "-";
                 } else {
-                    startCell = st.format(timeFmt);
+                    ZonedDateTime nyStart = st.atZone(UTC).withZoneSameInstant(NEW_YORK);
+                    startCell = nyStart.format(timeFmt);
                 }
 
                 String endCell;
                 if (ed == null) {
                     endCell = "-";
                 } else {
-                    endCell = ed.format(timeFmt);
+                    ZonedDateTime nyEnd = ed.atZone(UTC).withZoneSameInstant(NEW_YORK);
+                    endCell = nyEnd.format(timeFmt);
                 }
 
                 double hrs = computeHours(st, ed);
@@ -195,8 +204,9 @@ public class AdminEventPage {
     }
 
     private static String safe(String s) {
-        if (s == null)
+        if (s == null) {
             return "";
+        }
         return s;
     }
 

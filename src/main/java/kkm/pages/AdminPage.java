@@ -24,7 +24,12 @@ public class AdminPage {
         welcomeText.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy hh:mm a");
-        String formatted = (signInTime == null) ? "-" : signInTime.format(formatter);
+        String formatted;
+        if (signInTime == null) {
+            formatted = "-";
+        } else {
+            formatted = signInTime.format(formatter);
+        }
 
         Text statusText = new Text("You are currently signed in since " + formatted);
         statusText.setStyle("-fx-font-size: 14px;");
@@ -44,7 +49,8 @@ public class AdminPage {
             MainFrame.loadMenu(stage);
         });
 
-        vbox.getChildren().addAll(welcomeText, statusText, volunteerList, addEventsButton, seeEventsButton, signOutButton);
+        vbox.getChildren().addAll(welcomeText, statusText, volunteerList, addEventsButton, seeEventsButton,
+                signOutButton);
 
         stage.setScene(new Scene(vbox, 400, 300));
         stage.setTitle("Admin Page");

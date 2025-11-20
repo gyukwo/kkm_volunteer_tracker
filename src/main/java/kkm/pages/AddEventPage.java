@@ -88,26 +88,24 @@ public class AddEventPage {
             String volsText = volsF.getText().trim();
             String eventDescription = descF.getText().trim();
 
-            if (eventName.isEmpty() || eventLocation.isEmpty() ||
-                    eventStart.isEmpty() || eventEnd.isEmpty() ||
-                    volsText.isEmpty()) {
+            if (eventName.isEmpty() || eventLocation.isEmpty() || eventStart.isEmpty() || eventEnd.isEmpty() || volsText.isEmpty()) {
                 error.setText("All fields except description are required.");
                 error.setTextFill(Color.RED);
                 return;
             }
 
-            int eventVolunteers;
+            //Looked up the Try Catch format https://docs.oracle.com/javase/tutorial/essential/exceptions/definition.html
+            int eventVolunteers;   
             try {
                 eventVolunteers = Integer.parseInt(volsText);
             } catch (NumberFormatException ex) {
-                error.setText("Number of volunteers must be an integer.");
+                error.setText("Number of volunteers must be an integer."); 
                 error.setTextFill(Color.RED);
                 return;
             }
 
             try {
-                DB.insertEvent(eventName, eventLocation, eventStart, eventEnd,
-                        eventVolunteers, eventDescription);
+                DB.insertEvent(eventName, eventLocation, eventStart, eventEnd, eventVolunteers, eventDescription);
                 error.setTextFill(Color.GREEN);
                 error.setText("Event created successfully!");
 

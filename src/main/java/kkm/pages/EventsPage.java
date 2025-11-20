@@ -42,22 +42,27 @@ public class EventsPage {
         nameLabel.setTextFill(Color.DARKGREEN);
         nameLabel.setFont(MainFrame.TABLE_BODY_FONT);
         gp.add(nameLabel, 1, row);
+
         Label locLabel = new Label("Location");
         locLabel.setTextFill(Color.DARKGREEN);
         locLabel.setFont(MainFrame.TABLE_BODY_FONT);
         gp.add(locLabel, 2, row);
+
         Label startLabel = new Label("Start");
         startLabel.setTextFill(Color.DARKGREEN);
         startLabel.setFont(MainFrame.TABLE_BODY_FONT);
         gp.add(startLabel, 3, row);
+
         Label endLabel = new Label("End");
         endLabel.setTextFill(Color.DARKGREEN);
         endLabel.setFont(MainFrame.TABLE_BODY_FONT);
         gp.add(endLabel, 4, row);
+
         Label volsLabel = new Label("# Volunteers");
         volsLabel.setTextFill(Color.DARKGREEN);
         volsLabel.setFont(MainFrame.TABLE_BODY_FONT);
         gp.add(volsLabel, 5, row);
+
         Label descLabel = new Label("Description");
         descLabel.setTextFill(Color.DARKGREEN);
         descLabel.setFont(MainFrame.TABLE_BODY_FONT);
@@ -66,6 +71,7 @@ public class EventsPage {
 
         DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("h:mm a");
 
+        // Single error label, only added to the VBox (not to the GridPane)
         Label error = new Label();
         error.setTextFill(Color.GREEN);
         error.setFont(MainFrame.TABLE_BODY_FONT);
@@ -73,24 +79,27 @@ public class EventsPage {
         if (todaysEvents.isEmpty()) {
             Label none = new Label("No events scheduled for today.");
             none.setFont(MainFrame.TABLE_BODY_FONT);
-            gp.add(none, 0, row, 6, 1);
+            gp.add(none, 0, row, 7, 1);
         } else {
+            int userId = Session.getUserId();
+
             for (Event ev : todaysEvents) {
                 Label name = new Label(ev.getEventName());
                 name.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(name, 1, row);
+
                 Label loc = new Label(ev.getEventLocation());
                 loc.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(loc, 2, row);
 
-                String startStr = "";
+                String startStr;
                 if (ev.getEventStart() == null) {
                     startStr = "-";
                 } else {
                     startStr = ev.getEventStart().format(timeFmt);
                 }
 
-                String endStr = "";
+                String endStr;
                 if (ev.getEventEnd() == null) {
                     endStr = "-";
                 } else {
@@ -100,9 +109,11 @@ public class EventsPage {
                 Label start = new Label(startStr);
                 start.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(start, 3, row);
+
                 Label end = new Label(endStr);
                 end.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(end, 4, row);
+
                 Label vols = new Label(String.valueOf(ev.getEventVolunteers()));
                 vols.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(vols, 5, row);
@@ -115,10 +126,7 @@ public class EventsPage {
                 desc.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(desc, 6, row);
 
-                int userId = Session.getUserId();
-
-                String text = "";
-
+                String text;
                 if (DB.isUserSignedUpForEvent(userId, ev.getEventId())) {
                     text = "Sign Out";
                 } else {
@@ -129,13 +137,13 @@ public class EventsPage {
 
                 signUpButton.setOnAction(e -> {
                     if (signUpButton.getText().equals("Sign Up")) {
-                        DB.addUserToEvent(userId, ev.getEventId()); 
+                        DB.addUserToEvent(userId, ev.getEventId());
                         signUpButton.setText("Sign Out");
                         error.setTextFill(Color.GREEN);
                         error.setText("Successfully signed up for event: " + ev.getEventName());
                         System.out.println("Successfully signed up for event: " + ev.getEventName());
                     } else {
-                        DB.removeUserFromEvent(userId, ev.getEventId()); 
+                        DB.removeUserFromEvent(userId, ev.getEventId());
                         signUpButton.setText("Sign Up");
                         error.setTextFill(Color.RED);
                         error.setText("Successfully signed out from event: " + ev.getEventName());
@@ -143,8 +151,7 @@ public class EventsPage {
                     }
                 });
 
-                gp.add(signUpButton, 0, row); 
-                gp.add(error, 0, row); 
+                gp.add(signUpButton, 0, row);
 
                 row++;
             }
