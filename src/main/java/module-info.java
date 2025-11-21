@@ -5,4 +5,5 @@ module ia_demo.kkm {
     exports kkm;
     exports kkm.model;
     exports kkm.pages;
+    requires org.apache.pdfbox;
 }

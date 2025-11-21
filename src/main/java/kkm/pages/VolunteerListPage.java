@@ -116,8 +116,7 @@ public class VolunteerListPage {
                 Button viewBt = new Button("View");
                 int vid = volunteerId; // effectively final for lambda
                 viewBt.setOnAction(e -> {
-                    // TODO: create a VolunteerDetailPage
-                    // For now we just call a placeholder
+                    PDFPage.createPDF(stage);
                 });
                 gp.add(viewBt, 3, row);
 
