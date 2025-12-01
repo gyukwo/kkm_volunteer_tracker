@@ -18,7 +18,6 @@ public class VolunteerPage {
         VBox vbox = new VBox(20);
         vbox.setAlignment(Pos.CENTER);
 
-        // From Session
         String userName = Session.getUserName();
         LocalDateTime signInTime = Session.getSignInTime();
 
@@ -28,8 +27,6 @@ public class VolunteerPage {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy hh:mm a");
         String formatted = (signInTime == null) ? "-" : signInTime.format(formatter);
 
-        // TODO right now this is for signed in to account, but I wanted it to be since
-        // u signed in for an event
         String signInStatus = Session.isSignedIn()
                 ? "You are currently signed in since " + formatted
                 : "You are currently NOT signed in for an event";

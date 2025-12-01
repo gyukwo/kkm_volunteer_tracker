@@ -114,7 +114,6 @@ public class VolunteerListPage {
                 gp.add(lastDateL, 2, row);
 
                 Button viewBt = new Button("View");
-                int vid = volunteerId; // effectively final for lambda
                 viewBt.setOnAction(e -> {
                     PDFPage.createPDF(stage);
                 });

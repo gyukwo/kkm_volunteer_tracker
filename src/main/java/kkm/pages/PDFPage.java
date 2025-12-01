@@ -51,15 +51,14 @@ public class PDFPage {
                     + "right edge of the page. You can keep writing as much as you want here "
                     + "and it will automatically break into new lines.", pdfFont, fontSize, maxWidth);
 
+            List<String> title = wrapText("Letter of Verification for Student Community Service", pdfFont, fontSize+10, maxWidth);
+
+
+
             try (PDPageContentStream contentStream = new PDPageContentStream(doc, page)) {
 
                 contentStream.drawImage(logo, imgX, imgY, imgWidth, imgHeight);
-
                 contentStream.beginText();
-
-                // drawWrappedText(contentStream, pdfFont, 16, 70, 650, 450, text);
-                // writeWrappedText(contentStream, pdfFont, 16, text, 70, 650, 460);
-
                 contentStream.setFont(pdfFont, fontSize);
                 contentStream.newLineAtOffset(50, imgY - 20);
 
@@ -94,23 +93,22 @@ public class PDFPage {
 
         for (String word : words) {
 
-            String testLine = currentLine.length() == 0
-                    ? word
-                    : currentLine + " " + word;
+            String testLine;
+            if (currentLine.length() == 0) {
+                testLine = word;
+            } else {
+                testLine = currentLine + " " + word;
+            }
 
             float size = font.getStringWidth(testLine) / 1000 * fontSize;
 
             if (size > maxWidth) {
-                // current line full → push it & start new
                 lines.add(currentLine.toString());
                 currentLine = new StringBuilder(word);
             } else {
-                // safe to append word
                 currentLine = new StringBuilder(testLine);
             }
         }
-
-        // Add the last line
         if (currentLine.length() > 0) {
             lines.add(currentLine.toString());
         }
