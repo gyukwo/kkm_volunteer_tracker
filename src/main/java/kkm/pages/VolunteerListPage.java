@@ -115,7 +115,7 @@ public class VolunteerListPage {
 
                 Button viewBt = new Button("View");
                 viewBt.setOnAction(e -> {
-                    PDFPage.createPDF(stage);
+                    PDFPage.createPDF(stage, volunteerId);
                 });
                 gp.add(viewBt, 3, row);
 

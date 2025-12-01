@@ -112,7 +112,6 @@ public class HoursPage {
             none.setFont(MainFrame.TABLE_BODY_FONT);
             gp.add(none, 0, row, 6, 1);
         } else {
-            // Sort by signup start time (most recent first)
             pastEventSignups.sort((a, b) -> {
                 LocalDateTime as = a.getEventSignupStartTime();
                 LocalDateTime bs = b.getEventSignupStartTime();
@@ -131,7 +130,6 @@ public class HoursPage {
                 String endStr = "-";
 
                 if (s != null) {
-                    // Treat DB time as UTC, convert to EST
                     ZonedDateTime utcStart = s.atZone(utc);
                     ZonedDateTime estStart = utcStart.withZoneSameInstant(est);
 
