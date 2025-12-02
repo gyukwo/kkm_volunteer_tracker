@@ -1,6 +1,5 @@
 package kkm.pages;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -20,6 +19,7 @@ import kkm.DB;
 import kkm.MainFrame;
 import kkm.model.Event;
 import kkm.model.EventSignup;
+import kkm.Session;
 
 public class AdminEventPage {
     // time zone stuff from
@@ -161,7 +161,7 @@ public class AdminEventPage {
                     endCell = nyEnd.format(timeFmt);
                 }
 
-                double hrs = computeHours(st, ed);
+                double hrs = Session.computeHours(st, ed);
 
                 String volunteerLabel = DB.getUserNameByUserId(s.getVolunteerId());
                 if (volunteerLabel == null || volunteerLabel.trim().isEmpty()) {
@@ -210,12 +210,4 @@ public class AdminEventPage {
         return s;
     }
 
-    private static double computeHours(LocalDateTime start, LocalDateTime end) {
-        if (start == null || end == null)
-            return 0.0;
-        if (end.isBefore(start))
-            return 0.0;
-        double minutes = Duration.between(start, end).toMinutes();
-        return minutes / 60.0;
-    }
 }

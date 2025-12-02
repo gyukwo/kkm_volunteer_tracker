@@ -30,14 +30,10 @@ public class HoursPage {
                 ? ("User #" + userId)
                 : userName;
 
-        // Load past event signups for this user
         ArrayList<EventSignup> pastEventSignups = DB.loadPastEventSignupsForUser(userId);
 
-        double totalHours = 0.0;
-        for (EventSignup signup : pastEventSignups) {
-            totalHours += computeHours(signup.getEventSignupStartTime(),
-                                       signup.getEventSignupEndTime());
-        }
+        double totalHours = Session.getTotalHours(userId);
+
 
         VBox root = new VBox();
         root.setAlignment(Pos.TOP_CENTER);
@@ -144,7 +140,7 @@ public class HoursPage {
                     endStr = estEnd.format(timeFmt);
                 }
 
-                double hrs = computeHours(s, ed);
+                double hrs = Session.computeHours(s, ed);
 
                 Label dateL = new Label(dateStr);
                 dateL.setFont(MainFrame.TABLE_BODY_FONT);
@@ -197,14 +193,4 @@ public class HoursPage {
         return s;
     }
 
-    private static double computeHours(LocalDateTime signupStart, LocalDateTime signupEnd) {
-        if (signupStart == null || signupEnd == null) {
-            return 0.0;
-        }
-        if (signupEnd.isBefore(signupStart)) {
-            return 0.0;
-        }
-        double minutes = Duration.between(signupStart, signupEnd).toMinutes();
-        return minutes / 60.0;
-    }
 }

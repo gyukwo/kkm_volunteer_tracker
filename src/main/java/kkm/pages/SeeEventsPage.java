@@ -122,7 +122,6 @@ public class SeeEventsPage {
                 Button viewButton = new Button("View");
                 viewButton.setOnAction(e -> {
                     AdminEventPage.showEvent(stage, ev);
-                    //System.out.println("Admin viewing event: " + ev.getEventName() + " (ID=" + ev.getEventId() + ")");
                 });
 
                 gp.add(viewButton, 0, row);

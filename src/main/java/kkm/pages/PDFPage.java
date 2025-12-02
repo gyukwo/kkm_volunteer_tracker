@@ -20,7 +20,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 import javafx.stage.Stage;
 import kkm.DB;
-import kkm.model.EventSignup;
+import kkm.Session;
 
 public class PDFPage {
 
@@ -32,39 +32,17 @@ public class PDFPage {
             volunteerName = "Volunteer #" + volunteerId;
         }
         
-        ArrayList<EventSignup> signups = DB.loadPastEventSignupsForUser(volunteerId);
+        double totalHours = Session.getTotalHours(volunteerId);
 
-        double totalHours = 0.0;
         LocalDate lastVolunteerDate = null;
-
-        if (signups != null) {
-            for (EventSignup es : signups) {
-                LocalDateTime start = es.getEventSignupStartTime();
-                LocalDateTime end = es.getEventSignupEndTime();
-
-                totalHours += computeHours(start, end);
-
-                LocalDateTime ref = null;
-                if (end != null) {
-                    ref = end;
-                } else if (start != null) {
-                    ref = start;
-                }
-                if (ref != null) {
-                    LocalDate d = ref.toLocalDate();
-                    if (lastVolunteerDate == null || d.isAfter(lastVolunteerDate)) {
-                        lastVolunteerDate = d;
-                    }
-                }
-            }
-        }
 
         LocalDate issueDate = LocalDate.now();
         DateTimeFormatter issueFmt = DateTimeFormatter.ofPattern("MMMM d, yyyy");
 
         String issueDateText = "Issue Date: " + issueDate.format(issueFmt);
         String nameText = "Student Name: " + volunteerName;
-        String orgInfoText = "Issuing Organization: Kingdom Kids Ministry, [City, State].";
+        String supervisorText = "Name of Supervisor(s): " ;
+        String orgInfoText = "Issuing Organization: Kingdom Kids Ministry, 100 Rockland Ave, Norwood, NJ 07648, (201) 767-0400";
 
         String descriptionText =
             "Description of Volunteer Services: " +
@@ -102,9 +80,8 @@ public class PDFPage {
             float imgHeight = logo.getHeight() * scale;
 
             float imgX = (pageWidth - imgWidth) / 2f;
-            float imgY = pageHeight - imgHeight - 40f; // 40 pt top margin
+            float imgY = pageHeight - imgHeight - 40f; 
 
-            // Fonts
             PDFont titleFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
             PDFont bodyFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
 
@@ -114,13 +91,15 @@ public class PDFPage {
             float marginLeft = 50f;
             float maxTextWidth = pageWidth - 2 * marginLeft;
 
-            // Build wrapped text blocks
+            //title text
             List<String> titleLines = wrapText(
                     "Letter of Verification for Student Community Service",
                     titleFont, titleFontSize, maxTextWidth);
-
+            
+            //rest of text
             List<String> issueLines = wrapText(issueDateText, bodyFont, bodyFontSize, maxTextWidth);
             List<String> nameLines = wrapText(nameText, bodyFont, bodyFontSize, maxTextWidth);
+            List<String> supervisorLines = wrapText(supervisorText, bodyFont, bodyFontSize, maxTextWidth);
             List<String> orgLines = wrapText(orgInfoText, bodyFont, bodyFontSize, maxTextWidth);
             List<String> descLines = wrapText(descriptionText, bodyFont, bodyFontSize, maxTextWidth);
             List<String> totalLines = wrapText(totalHoursText, bodyFont, bodyFontSize, maxTextWidth);
@@ -128,32 +107,25 @@ public class PDFPage {
             List<String> evalLines = wrapText(evaluationText, bodyFont, bodyFontSize, maxTextWidth);
 
             try (PDPageContentStream contentStream = new PDPageContentStream(doc, page)) {
-
-                // Draw logo
                 contentStream.drawImage(logo, imgX, imgY, imgWidth, imgHeight);
 
-                // Start text below logo
-                float textStartY = imgY - 60f; // space between image and text
+                float textStartY = imgY - 60f; 
 
                 contentStream.beginText();
                 contentStream.newLineAtOffset(marginLeft, textStartY);
 
-                // Title
                 contentStream.setFont(titleFont, titleFontSize);
                 for (String line : titleLines) {
                     contentStream.showText(line);
                     contentStream.newLineAtOffset(0, - (titleFontSize + 4));
                 }
-
-                // Blank line
                 contentStream.newLineAtOffset(0, - (bodyFontSize + 4));
 
-                // Switch to body font
                 contentStream.setFont(bodyFont, bodyFontSize);
 
-                // Helper to print a block and add a blank line after
                 printLines(contentStream, issueLines, bodyFontSize);
                 printLines(contentStream, nameLines, bodyFontSize);
+                printLines(contentStream, supervisorLines, bodyFontSize);
                 printLines(contentStream, orgLines, bodyFontSize);
                 printLines(contentStream, descLines, bodyFontSize);
                 printLines(contentStream, totalLines, bodyFontSize);
@@ -171,7 +143,6 @@ public class PDFPage {
         }
     }
 
-    // Wraps text based on font and max width, returns list of lines
     public static List<String> wrapText(String text, PDFont font, float fontSize, float maxWidth)
             throws IOException {
 
@@ -209,25 +180,12 @@ public class PDFPage {
         return lines;
     }
 
-    // Helper to print a block of wrapped lines, with extra spacing after
     private static void printLines(PDPageContentStream cs, List<String> lines, float fontSize) throws IOException {
         for (String line : lines) {
             cs.showText(line);
             cs.newLineAtOffset(0, - (fontSize + 2));
         }
-        // extra blank line between sections
         cs.newLineAtOffset(0, - (fontSize + 4));
     }
 
-    // Same logic you used elsewhere to compute hours between two times
-    private static double computeHours(LocalDateTime start, LocalDateTime end) {
-        if (start == null || end == null) {
-            return 0.0;
-        }
-        if (end.isBefore(start)) {
-            return 0.0;
-        }
-        double minutes = Duration.between(start, end).toMinutes();
-        return minutes / 60.0;
-    }
 }

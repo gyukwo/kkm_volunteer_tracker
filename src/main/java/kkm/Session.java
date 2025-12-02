@@ -1,14 +1,19 @@
 package kkm;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import kkm.model.EventSignup;
 
 public final class Session {
     private static boolean signedIn = false;
     private static LocalDateTime signInTime = null;
     private static int userId = -1;
     private static String userName = "";
+    private static double totalHours;
 
     private Session() {
     } // no instances
@@ -59,10 +64,8 @@ public final class Session {
         userName = "";
     }
 
-    // A map to store event sign-up statuses for the user
     private static Map<Integer, Boolean> userEventSignups = new HashMap<>();
 
-    // Method to set the sign-up status for a user for a specific event
     public static void setUserEventSignup(int eventId, boolean isSignedUp) {
         userEventSignups.put(eventId, isSignedUp);
     }
@@ -70,6 +73,26 @@ public final class Session {
     // Method to get the sign-up status for a specific event
     public static boolean isUserSignedUpForEvent(int eventId) {
         return userEventSignups.getOrDefault(eventId, false);
+    }
+
+    //Method to get the total hours of a user
+    public static double computeHours(LocalDateTime start, LocalDateTime end) {
+        if (start == null || end == null)
+            return 0.0;
+        if (end.isBefore(start))
+            return 0.0;
+        double minutes = Duration.between(start, end).toMinutes();
+        return minutes / 60.0;
+    }
+
+    public static double getTotalHours(int userId) {
+        ArrayList<EventSignup> pastEventSignups = DB.loadPastEventSignupsForUser(userId);
+
+        for (EventSignup signup : pastEventSignups) {
+            totalHours += computeHours(signup.getEventSignupStartTime(), signup.getEventSignupEndTime());
+        }
+
+        return totalHours;
     }
 
 }
