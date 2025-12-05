@@ -13,6 +13,8 @@ import kkm.MainFrame;
 import kkm.Session;
 
 public class AdminPage {
+    private static final String BACKGROUND_COLOR = "#E5F3FD";
+
     public static void showAdminPage(Stage stage) {
         VBox vbox = new VBox(20);
         vbox.setAlignment(Pos.CENTER);
@@ -51,8 +53,10 @@ public class AdminPage {
 
         vbox.getChildren().addAll(welcomeText, statusText, volunteerList, addEventsButton, seeEventsButton,
                 signOutButton);
+        vbox.setStyle("-fx-background-color: " + BACKGROUND_COLOR + ";");
 
-        stage.setScene(new Scene(vbox, 400, 300));
+
+        stage.setScene(new Scene(vbox, 800, 600));
         stage.setTitle("Admin Page");
         stage.show();
     }

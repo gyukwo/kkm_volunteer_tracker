@@ -1,6 +1,5 @@
 package kkm.pages;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -22,6 +21,7 @@ import kkm.Session;
 import kkm.model.EventSignup;
 
 public class HoursPage {
+    private static final String BACKGROUND_COLOR = "#E5F3FD";
 
     public static void showUserHours(Stage stage) {
         int userId = Session.getUserId();
@@ -179,8 +179,9 @@ public class HoursPage {
         hbox.getChildren().addAll(btBack);
 
         root.getChildren().addAll(pageTitle, header, gp, hbox);
+        root.setStyle("-fx-background-color: " + BACKGROUND_COLOR + ";");
 
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root, 800, 600);
         stage.setScene(scene);
         stage.setTitle("Volunteer Hours");
         stage.show();

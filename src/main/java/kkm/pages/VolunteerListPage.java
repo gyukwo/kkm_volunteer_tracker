@@ -21,6 +21,8 @@ import kkm.model.EventSignup;
 
 public class VolunteerListPage {
 
+    private static final String BACKGROUND_COLOR = "#E5F3FD";
+
     public static void showVolunteerList(Stage stage) {
         ArrayList<Integer> volunteerIds = DB.loadVolunteerIds();
 
@@ -131,8 +133,11 @@ public class VolunteerListPage {
         actions.setPadding(new Insets(15, 0, 0, 0));
 
         root.getChildren().addAll(title, gp, actions);
+        root.setStyle("-fx-background-color: " + BACKGROUND_COLOR + ";");
 
-        Scene scene = new Scene(root, 750, 450);
+        
+
+        Scene scene = new Scene(root, 800, 600);
         stage.setScene(scene);
         stage.setTitle("Volunteer List");
         stage.show();

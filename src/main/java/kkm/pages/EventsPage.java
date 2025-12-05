@@ -20,6 +20,7 @@ import kkm.Session;
 import kkm.model.Event;
 
 public class EventsPage {
+    private static final String BACKGROUND_COLOR = "#E5F3FD";
 
     public static void showDailyEvents(Stage stage) {
         ArrayList<Event> allEvents = DB.loadEvents();
@@ -168,8 +169,10 @@ public class EventsPage {
         vbox.setSpacing(20);
         vbox.setAlignment(Pos.TOP_CENTER);
         vbox.getChildren().addAll(pageTitle, gp, error, btBack);
+        vbox.setStyle("-fx-background-color: " + BACKGROUND_COLOR + ";");
 
-        Scene scene = new Scene(vbox, 600, 400);
+
+        Scene scene = new Scene(vbox, 800, 600);
         stage.setScene(scene);
         stage.setTitle("Events Page");
         stage.show();

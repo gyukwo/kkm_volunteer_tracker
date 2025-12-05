@@ -2,9 +2,7 @@ package kkm.pages;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -91,12 +89,10 @@ public class PDFPage {
             float marginLeft = 50f;
             float maxTextWidth = pageWidth - 2 * marginLeft;
 
-            //title text
             List<String> titleLines = wrapText(
                     "Letter of Verification for Student Community Service",
                     titleFont, titleFontSize, maxTextWidth);
             
-            //rest of text
             List<String> issueLines = wrapText(issueDateText, bodyFont, bodyFontSize, maxTextWidth);
             List<String> nameLines = wrapText(nameText, bodyFont, bodyFontSize, maxTextWidth);
             List<String> supervisorLines = wrapText(supervisorText, bodyFont, bodyFontSize, maxTextWidth);

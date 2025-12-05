@@ -11,8 +11,6 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Properties;
-import java.time.Duration;
-
 
 import kkm.model.Event;
 import kkm.model.EventSignup;
@@ -125,7 +123,7 @@ public class DB {
 		}
 	}
 
-	/** Updates the name of a league in the database. */
+	// Updates the name of a league in the database.
 	public static void updateLeague(League league) {
 		String query = "update league set league_name = ? where league_id = ?";
 
@@ -141,7 +139,7 @@ public class DB {
 		}
 	}
 
-	// Deletes the given league from the database. //
+	// Deletes the given league from the database.
 	public static void deleteLeague(int leagueId) {
 		String query = "delete from league where league_id = ?";
 
@@ -287,7 +285,7 @@ public class DB {
 			ps.setString(1, username);
 			ps.setString(2, password);
 			ps.setString(3, userType);
-			ps.setInt(4, 1); // default status, or adjust as you like
+			ps.setInt(4, 1);
 
 			int updated = ps.executeUpdate();
 			if (updated > 0) {

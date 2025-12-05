@@ -26,6 +26,8 @@ public class AdminEventPage {
     // https://docs.oracle.com/javase/8/docs/api/java/util/TimeZone.html
     private static final ZoneId UTC = ZoneId.of("UTC");
     private static final ZoneId NEW_YORK = ZoneId.of("America/New_York");
+    
+    private static final String BACKGROUND_COLOR = "#E5F3FD";
 
     public static void showEvent(Stage stage, Event event) {
         int eventId = event.getEventId();
@@ -196,8 +198,9 @@ public class AdminEventPage {
         actions.setPadding(new Insets(15, 0, 0, 0));
 
         root.getChildren().addAll(title, header, gp, actions);
+        root.setStyle("-fx-background-color: " + BACKGROUND_COLOR + ";");
 
-        Scene scene = new Scene(root, 700, 450);
+        Scene scene = new Scene(root, 800, 600);
         stage.setScene(scene);
         stage.setTitle("Event Details");
         stage.show();

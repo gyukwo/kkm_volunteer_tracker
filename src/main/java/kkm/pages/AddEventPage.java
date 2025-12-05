@@ -16,6 +16,7 @@ import kkm.DB;
 import kkm.MainFrame;
 
 public class AddEventPage {
+    private static final String BACKGROUND_COLOR = "#E5F3FD";
 
     public static void showAddEvent(Stage stage) {
         VBox root = new VBox(20);
@@ -94,7 +95,6 @@ public class AddEventPage {
                 return;
             }
 
-            //Looked up the Try Catch format https://docs.oracle.com/javase/tutorial/essential/exceptions/definition.html
             int eventVolunteers;   
             try {
                 eventVolunteers = Integer.parseInt(volsText);
@@ -131,8 +131,9 @@ public class AddEventPage {
         actions.setPadding(new Insets(10, 0, 0, 0));
 
         root.getChildren().addAll(title, form, error, actions);
+        root.setStyle("-fx-background-color: " + BACKGROUND_COLOR + ";");
 
-        Scene scene = new Scene(root, 600, 420);
+        Scene scene = new Scene(root, 800, 600);
         stage.setScene(scene);
         stage.setTitle("Add Event");
         stage.show();
