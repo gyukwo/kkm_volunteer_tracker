@@ -14,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import kkm.DB;
 import kkm.MainFrame;
@@ -22,6 +23,7 @@ import kkm.model.EventSignup;
 
 public class HoursPage {
     private static final String BACKGROUND_COLOR = "#E5F3FD";
+    private static final String RED =  "D30000";
 
     public static void showUserHours(Stage stage) {
         int userId = Session.getUserId();
@@ -172,6 +174,7 @@ public class HoursPage {
 
         Button btBack = new Button("Back");
         btBack.setOnAction(e -> VolunteerPage.showVolunteerPage(stage));
+        styleButton(btBack, RED);
 
         HBox hbox = new HBox();
         hbox.setPadding(new Insets(30, 0, 0, 0));
@@ -194,4 +197,38 @@ public class HoursPage {
         return s;
     }
 
+    private static void styleButton(Button btn, String color) {
+        btn.setFont(new Font("Arial", 16));
+        btn.setPrefWidth(200);
+        btn.setPrefHeight(40);
+        btn.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-text-fill: " + color + ";" +
+                        "-fx-background-radius: 999px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 999px;");
+
+        btn.setOnMouseEntered(e -> btn.setStyle(
+                "-fx-background-color: " + color + ";" +
+                        "-fx-text-fill: white;" +
+                        "-fx-background-radius: 999px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 999px;"));
+
+        btn.setOnMouseExited(e -> btn.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-text-fill: " + color + ";" +
+                        "-fx-background-radius: 999px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 999px;"));
+    }
 }

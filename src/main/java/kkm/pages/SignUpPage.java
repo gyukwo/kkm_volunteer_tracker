@@ -13,6 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import kkm.DB;
 import kkm.MainFrame;
@@ -20,6 +21,8 @@ import kkm.Session;
 
 public class SignUpPage {
     private static final String BACKGROUND_COLOR = "#E5F3FD";
+    private static final String RED =  "D30000";
+    private static final String BLUE = "#7BB6FF";
 
     public static void showSignUp(Stage stage) {
         VBox root = new VBox(20);
@@ -65,7 +68,7 @@ public class SignUpPage {
         error.setFont(MainFrame.TABLE_BODY_FONT);
 
         Button btCreate = new Button("Create Account");
-        Button btBack = new Button("Back");
+        styleButton(btCreate, BLUE);
 
         btCreate.setOnAction(e -> {
             String username = userF.getText().trim();
@@ -102,6 +105,8 @@ public class SignUpPage {
             }
         });
 
+        Button btBack = new Button("Back");
+        styleButton(btBack, RED);
         btBack.setOnAction(e -> MainFrame.loadMenu(stage));
 
         HBox actions = new HBox(15, btCreate, btBack);
@@ -116,5 +121,40 @@ public class SignUpPage {
         stage.setScene(scene);
         stage.setTitle("User Signup");
         stage.show();
+    }
+
+    private static void styleButton(Button btn, String color) {
+        btn.setFont(new Font("Arial", 16));
+        btn.setPrefWidth(200);
+        btn.setPrefHeight(40);
+        btn.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-text-fill: " + color + ";" +
+                        "-fx-background-radius: 999px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 999px;");
+
+        btn.setOnMouseEntered(e -> btn.setStyle(
+                "-fx-background-color: " + color + ";" +
+                        "-fx-text-fill: white;" +
+                        "-fx-background-radius: 999px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 999px;"));
+
+        btn.setOnMouseExited(e -> btn.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-text-fill: " + color + ";" +
+                        "-fx-background-radius: 999px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 999px;"));
     }
 }

@@ -20,6 +20,9 @@ public class VolunteerPage {
     public static final Font TABLE_BODY_FONT = new Font("Arial", 25);
 
     private static final String BACKGROUND_COLOR = "#E5F3FD";
+    private static final String BLUE = "#7BB6FF";
+    private static final String RED =  "D30000";
+
 
     public static void showVolunteerPage(Stage stage) {
         VBox vbox = new VBox(20);
@@ -44,15 +47,18 @@ public class VolunteerPage {
 
         Button dailyEventsButton = new Button("Daily Events");
         dailyEventsButton.setOnAction(e -> EventsPage.showDailyEvents(stage));
+        styleButton(dailyEventsButton, BLUE);
 
         Button totalHoursButton = new Button("Total Hours");
         totalHoursButton.setOnAction(e -> HoursPage.showUserHours(stage));
+        styleButton(totalHoursButton, BLUE);
 
         Button signOutButton = new Button("Sign Out");
         signOutButton.setOnAction(e -> {
             Session.signOut();
             MainFrame.loadMenu(stage);
         });
+        styleButton(signOutButton, RED);
 
         vbox.getChildren().addAll(welcomeText, statusText,
                 dailyEventsButton, totalHoursButton, signOutButton);
@@ -62,5 +68,40 @@ public class VolunteerPage {
         stage.setScene(new Scene(vbox, 800, 600));
         stage.setTitle("Volunteer Page");
         stage.show();
+    }
+
+    private static void styleButton(Button btn, String color) {
+        btn.setFont(new Font("Arial", 16));
+        btn.setPrefWidth(200);
+        btn.setPrefHeight(40);
+        btn.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-text-fill: " + color + ";" +
+                        "-fx-background-radius: 999px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 999px;");
+
+        btn.setOnMouseEntered(e -> btn.setStyle(
+                "-fx-background-color: " + color + ";" +
+                        "-fx-text-fill: white;" +
+                        "-fx-background-radius: 999px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 999px;"));
+
+        btn.setOnMouseExited(e -> btn.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-text-fill: " + color + ";" +
+                        "-fx-background-radius: 999px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 999px;"));
     }
 }

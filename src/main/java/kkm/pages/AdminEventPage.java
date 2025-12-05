@@ -14,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import kkm.DB;
 import kkm.MainFrame;
@@ -28,6 +29,7 @@ public class AdminEventPage {
     private static final ZoneId NEW_YORK = ZoneId.of("America/New_York");
     
     private static final String BACKGROUND_COLOR = "#E5F3FD";
+    private static final String RED =  "D30000";
 
     public static void showEvent(Stage stage, Event event) {
         int eventId = event.getEventId();
@@ -192,6 +194,7 @@ public class AdminEventPage {
 
         Button btBack = new Button("Back");
         btBack.setOnAction(e -> SeeEventsPage.showDailyEvents(stage));
+        styleButton(btBack, RED);
 
         HBox actions = new HBox(btBack);
         actions.setAlignment(Pos.CENTER);
@@ -213,4 +216,38 @@ public class AdminEventPage {
         return s;
     }
 
+    private static void styleButton(Button btn, String color) {
+        btn.setFont(new Font("Arial", 16));
+        btn.setPrefWidth(200);
+        btn.setPrefHeight(40);
+        btn.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-text-fill: " + color + ";" +
+                        "-fx-background-radius: 999px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 999px;");
+
+        btn.setOnMouseEntered(e -> btn.setStyle(
+                "-fx-background-color: " + color + ";" +
+                        "-fx-text-fill: white;" +
+                        "-fx-background-radius: 999px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 999px;"));
+
+        btn.setOnMouseExited(e -> btn.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-text-fill: " + color + ";" +
+                        "-fx-background-radius: 999px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 999px;"));
+    }
 }

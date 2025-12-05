@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import kkm.DB;
 import kkm.MainFrame;
@@ -21,6 +22,9 @@ import kkm.model.Event;
 
 public class EventsPage {
     private static final String BACKGROUND_COLOR = "#E5F3FD";
+    private static final String RED =  "D30000";
+    private static final String BLUE = "#7BB6FF";
+
 
     public static void showDailyEvents(Stage stage) {
         ArrayList<Event> allEvents = DB.loadEvents();
@@ -72,7 +76,6 @@ public class EventsPage {
 
         DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("h:mm a");
 
-        // Single error label, only added to the VBox (not to the GridPane)
         Label error = new Label();
         error.setTextFill(Color.GREEN);
         error.setFont(MainFrame.TABLE_BODY_FONT);
@@ -135,6 +138,7 @@ public class EventsPage {
                 }
 
                 Button signUpButton = new Button(text);
+                styleButton(signUpButton, BLUE);
 
                 signUpButton.setOnAction(e -> {
                     if (signUpButton.getText().equals("Sign Up")) {
@@ -160,6 +164,7 @@ public class EventsPage {
 
         Button btBack = new Button("Back");
         btBack.setOnAction(e -> VolunteerPage.showVolunteerPage(stage));
+        styleButton(btBack, RED);
 
         Label pageTitle = new Label("Today's Events");
         pageTitle.setFont(MainFrame.PAGE_HEADING_FONT);
@@ -176,5 +181,40 @@ public class EventsPage {
         stage.setScene(scene);
         stage.setTitle("Events Page");
         stage.show();
+    }
+
+    private static void styleButton(Button btn, String color) {
+        btn.setFont(new Font("Arial", 16));
+        btn.setPrefWidth(200);
+        btn.setPrefHeight(40);
+        btn.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-text-fill: " + color + ";" +
+                        "-fx-background-radius: 999px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 999px;");
+
+        btn.setOnMouseEntered(e -> btn.setStyle(
+                "-fx-background-color: " + color + ";" +
+                        "-fx-text-fill: white;" +
+                        "-fx-background-radius: 999px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 999px;"));
+
+        btn.setOnMouseExited(e -> btn.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-text-fill: " + color + ";" +
+                        "-fx-background-radius: 999px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 999px;"));
     }
 }

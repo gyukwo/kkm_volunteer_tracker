@@ -11,12 +11,16 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import kkm.DB;
 import kkm.MainFrame;
 
 public class AddEventPage {
     private static final String BACKGROUND_COLOR = "#E5F3FD";
+    private static final String RED =  "D30000";
+    private static final String BLUE = "#7BB6FF";
+
 
     public static void showAddEvent(Stage stage) {
         VBox root = new VBox(20);
@@ -79,8 +83,7 @@ public class AddEventPage {
         error.setFont(MainFrame.TABLE_BODY_FONT);
 
         Button btCreate = new Button("Create Event");
-        Button btBack = new Button("Back");
-
+        styleButton(btCreate, BLUE);
         btCreate.setOnAction(e -> {
             String eventName = nameF.getText().trim();
             String eventLocation = locF.getText().trim();
@@ -122,9 +125,11 @@ public class AddEventPage {
             }
         });
 
+        Button btBack = new Button("Back");
         btBack.setOnAction(e -> {
             AdminPage.showAdminPage(stage);
         });
+        styleButton(btBack, RED);
 
         HBox actions = new HBox(15, btCreate, btBack);
         actions.setAlignment(Pos.CENTER);
@@ -137,5 +142,40 @@ public class AddEventPage {
         stage.setScene(scene);
         stage.setTitle("Add Event");
         stage.show();
+    }
+
+    private static void styleButton(Button btn, String color) {
+        btn.setFont(new Font("Arial", 16));
+        btn.setPrefWidth(200);
+        btn.setPrefHeight(40);
+        btn.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-text-fill: " + color + ";" +
+                        "-fx-background-radius: 999px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 999px;");
+
+        btn.setOnMouseEntered(e -> btn.setStyle(
+                "-fx-background-color: " + color + ";" +
+                        "-fx-text-fill: white;" +
+                        "-fx-background-radius: 999px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 999px;"));
+
+        btn.setOnMouseExited(e -> btn.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-text-fill: " + color + ";" +
+                        "-fx-background-radius: 999px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-border-color: " + color + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 999px;"));
     }
 }
