@@ -87,6 +87,7 @@ public final class Session {
 
     public static double getTotalHours(int userId) {
         ArrayList<EventSignup> pastEventSignups = DB.loadPastEventSignupsForUser(userId);
+        double totalHours = 0;
 
         for (EventSignup signup : pastEventSignups) {
             totalHours += computeHours(signup.getEventSignupStartTime(), signup.getEventSignupEndTime());

@@ -30,6 +30,8 @@ public class PDFPage {
             volunteerName = "Volunteer #" + volunteerId;
         }
         
+        String adminName = Session.getUserName();
+
         double totalHours = Session.getTotalHours(volunteerId);
 
         LocalDate lastVolunteerDate = null;
@@ -39,7 +41,7 @@ public class PDFPage {
 
         String issueDateText = "Issue Date: " + issueDate.format(issueFmt);
         String nameText = "Student Name: " + volunteerName;
-        String supervisorText = "Name of Supervisor(s): " ;
+        String supervisorText = "Name of Supervisor(s): " + adminName;
         String orgInfoText = "Issuing Organization: Kingdom Kids Ministry, 100 Rockland Ave, Norwood, NJ 07648, (201) 767-0400";
 
         String descriptionText =

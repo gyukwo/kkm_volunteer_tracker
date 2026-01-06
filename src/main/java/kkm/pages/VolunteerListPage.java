@@ -55,7 +55,7 @@ public class VolunteerListPage {
         lastDateH.setFont(MainFrame.TABLE_HEADING_FONT);
         gp.add(lastDateH, 2, row);
 
-        Label actionH = new Label("Action");
+        Label actionH = new Label("Certificate");
         actionH.setFont(MainFrame.TABLE_HEADING_FONT);
         gp.add(actionH, 3, row);
 
@@ -118,7 +118,7 @@ public class VolunteerListPage {
                 lastDateL.setFont(MainFrame.TABLE_BODY_FONT);
                 gp.add(lastDateL, 2, row);
 
-                Button viewBt = new Button("View");
+                Button viewBt = new Button("Create PDF");
                 viewBt.setOnAction(e -> {
                     PDFPage.createPDF(stage, volunteerId);
                 });
