@@ -11,7 +11,8 @@ public class Event {
     private int eventVolunteers;
     private String eventDescription;
 
-    public Event(int eventId, String eventName, String eventLocation, LocalDateTime eventStart, LocalDateTime eventEnd, int eventVolunteers, String eventDescription) {
+    public Event(int eventId, String eventName, String eventLocation, LocalDateTime eventStart, LocalDateTime eventEnd,
+            int eventVolunteers, String eventDescription) {
         this.eventId = eventId;
         this.eventName = eventName;
         this.eventLocation = eventLocation;
@@ -20,8 +21,9 @@ public class Event {
         this.eventVolunteers = eventVolunteers;
         this.eventDescription = eventDescription;
     }
-    
-    public Event(String eventName, String eventLocation, LocalDateTime eventStart, LocalDateTime eventEnd, int eventVolunteers, String eventDescription) {
+
+    public Event(String eventName, String eventLocation, LocalDateTime eventStart, LocalDateTime eventEnd,
+            int eventVolunteers, String eventDescription) {
         this.eventId = -1; // default placeholder
         this.eventName = eventName;
         this.eventLocation = eventLocation;
@@ -30,7 +32,6 @@ public class Event {
         this.eventVolunteers = eventVolunteers;
         this.eventDescription = eventDescription;
     }
-
 
     public int getEventId() {
         return eventId;
@@ -87,6 +88,5 @@ public class Event {
     public void setEventDescription(String eventDescription) {
         this.eventDescription = eventDescription;
     }
-
 
 }

@@ -16,7 +16,7 @@ public final class Session {
     private static double totalHours;
 
     private Session() {
-    } // no instances
+    } 
 
     public static boolean isSignedIn() {
         return signedIn;
@@ -70,12 +70,10 @@ public final class Session {
         userEventSignups.put(eventId, isSignedUp);
     }
 
-    // Method to get the sign-up status for a specific event
     public static boolean isUserSignedUpForEvent(int eventId) {
         return userEventSignups.getOrDefault(eventId, false);
     }
 
-    //Method to get the total hours of a user
     public static double computeHours(LocalDateTime start, LocalDateTime end) {
         if (start == null || end == null)
             return 0.0;

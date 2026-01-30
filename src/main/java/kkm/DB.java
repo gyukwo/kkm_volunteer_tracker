@@ -14,7 +14,6 @@ import java.util.Properties;
 
 import kkm.model.Event;
 import kkm.model.EventSignup;
-import kkm.model.League;
 import kkm.model.User;
 
 public class DB {
@@ -25,7 +24,6 @@ public class DB {
 		try (InputStream input = new FileInputStream("config.properties")) {
 			Properties prop = new Properties();
 
-			// load a properties file
 			prop.load(input);
 
 			Properties connectionProps = new Properties();
@@ -45,7 +43,6 @@ public class DB {
 		}
 	}
 
-	// Returns an array list of the events in the database.
 	public static ArrayList<Event> loadEvents() {
 		ArrayList<Event> list = new ArrayList<>();
 
@@ -62,14 +59,12 @@ public class DB {
 				String eventName = rs.getString("event_name");
 				String eventLocation = rs.getString("event_location");
 
-				// Assuming event_start and event_end are DATETIME in DB
 				LocalDateTime eventStart = rs.getTimestamp("event_start").toLocalDateTime();
 				LocalDateTime eventEnd = rs.getTimestamp("event_end").toLocalDateTime();
 
 				int eventVolunteers = rs.getInt("event_volunteers");
 				String eventDescription = rs.getString("event_description");
 
-				// Build Event object
 				Event event = new Event(eventId, eventName, eventLocation, eventStart, eventEnd, eventVolunteers,
 						eventDescription);
 				list.add(event);
@@ -83,77 +78,6 @@ public class DB {
 		return list;
 	}
 
-	// Loads a single league given an id.
-	public static League loadLeague(int leagueId) {
-		String queryString = " select league.league_id, league_name " +
-				" from league  " +
-				" where league_id = ? ";
-
-		try (
-				PreparedStatement queryStmt = db.conn.prepareStatement(queryString)) {
-			queryStmt.setInt(1, leagueId);
-
-			try (ResultSet rs = queryStmt.executeQuery()) {
-
-				if (rs.next()) {
-					String leagueName = rs.getString("league_name");
-
-					return new League(leagueId, leagueName, false);
-				}
-			}
-		} catch (Exception ex) {
-			System.err.println(ex);
-			ex.printStackTrace(System.err);
-		}
-
-		return null;
-	}
-
-	// Adds a new league to the database.
-	public static void insertLeague(String leagueName) {
-		String query = "insert into league(league_name) values (?)";
-
-		try (PreparedStatement insertStmt = db.conn.prepareStatement(query)) {
-
-			insertStmt.setString(1, leagueName);
-			insertStmt.executeUpdate();
-		} catch (Exception ex) {
-			System.err.println(ex);
-			ex.printStackTrace(System.err);
-		}
-	}
-
-	// Updates the name of a league in the database.
-	public static void updateLeague(League league) {
-		String query = "update league set league_name = ? where league_id = ?";
-
-		try (PreparedStatement updateStmt = db.conn.prepareStatement(query)) {
-
-			updateStmt.setString(1, league.getLeagueName());
-			updateStmt.setInt(2, league.getLeagueId());
-
-			updateStmt.executeUpdate();
-		} catch (Exception ex) {
-			System.err.println(ex);
-			ex.printStackTrace(System.err);
-		}
-	}
-
-	// Deletes the given league from the database.
-	public static void deleteLeague(int leagueId) {
-		String query = "delete from league where league_id = ?";
-
-		try (PreparedStatement updateStmt = db.conn.prepareStatement(query)) {
-
-			updateStmt.setInt(1, leagueId);
-			updateStmt.executeUpdate();
-		} catch (Exception ex) {
-			System.err.println(ex);
-			ex.printStackTrace(System.err);
-		}
-	}
-
-	// Method to insert a new event into the event table
 	public static void insertEvent(String eventName, String eventLocation, String eventStart, String eventEnd,
 			int eventVolunteers, String eventDescription) {
 		String query = "INSERT INTO event (event_name, event_location, event_start, event_end, event_volunteers, event_description) VALUES (?, ?, ?, ?, ?, ?)";
@@ -172,7 +96,6 @@ public class DB {
 		}
 	}
 
-	// Method to insert a new user into the user table
 	public static void insertUser(String userName, String userPassword, String userStatus, String userType) {
 		String query = "INSERT INTO user (user_name, user_password, user_status, user_type) VALUES (?, ?, ?, ?)";
 
@@ -188,10 +111,9 @@ public class DB {
 		}
 	}
 
-	// Load a single user by id.
 	public static User loadUser(int userId) {
 		String sql = "SELECT user_id, full_name, email, phone, is_admin " +
-				"FROM user " + // <-- change to `users` if that's your table name
+				"FROM user " +
 				"WHERE user_id = ?";
 
 		try (PreparedStatement ps = db.conn.prepareStatement(sql)) {
@@ -215,8 +137,6 @@ public class DB {
 		return null;
 	}
 
-	// Load the past 5 most recent events attended by a user (events whose end time
-	// is before now).
 	public static ArrayList<Event> loadPastEventsForUser(int userId) {
 		ArrayList<Event> list = new ArrayList<>();
 
@@ -331,8 +251,8 @@ public class DB {
 			System.err.println("Error getting user type: " + ex.getMessage());
 			ex.printStackTrace(System.err);
 		}
-	
-		return null; 
+
+		return null;
 	}
 
 	public static int getUserIdByUsername(String username) {
@@ -352,10 +272,10 @@ public class DB {
 
 	public static String getUserNameByUserId(int userId) {
 		String sql = "SELECT user_name FROM user WHERE user_id = ?";
-	
+
 		try (PreparedStatement ps = db.conn.prepareStatement(sql)) {
 			ps.setInt(1, userId);
-	
+
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
 					return rs.getString("user_name");
@@ -367,9 +287,7 @@ public class DB {
 		}
 		return null;
 	}
-	
 
-	// Method to insert a new event signup into the event_signup table
 	public static void insertEventSignup(int volunteerId, int eventId, String signupStartTime, String signupEndTime,
 			String signupStatus) {
 		String query = "INSERT INTO event_signup (volunteer_id, event_id, event_signup_start_time, event_signup_end_time, event_signup_status) VALUES (?, ?, ?, ?, ?)";
@@ -424,7 +342,7 @@ public class DB {
 			ps.setInt(2, eventId);
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
-					return rs.getInt(1) > 0; 
+					return rs.getInt(1) > 0;
 				}
 			}
 		} catch (SQLException ex) {
@@ -437,7 +355,7 @@ public class DB {
 	public static void updateUserStatusForEvent(int volunteerId, int eventId, int status) {
 		String queryString = "UPDATE event_signup SET event_signup_status = ? WHERE volunteer_id = ? AND event_id = ?";
 		try (PreparedStatement ps = db.conn.prepareStatement(queryString)) {
-			ps.setInt(1, status); 
+			ps.setInt(1, status);
 			ps.setInt(2, volunteerId);
 			ps.setInt(3, eventId);
 			ps.executeUpdate();
@@ -450,19 +368,19 @@ public class DB {
 
 	public static ArrayList<EventSignup> loadPastEventSignupsForUser(int userId) {
 		ArrayList<EventSignup> list = new ArrayList<>();
-	
-		// SQL query to fetch past event signups for the user
-		String sql = "SELECT DISTINCT es.volunteer_id, es.event_id, es.event_signup_start_time, es.event_signup_end_time, " +
-					 "e.event_name, e.event_location, DATE(es.event_signup_start_time) AS event_date " +
-					 "FROM event_signup es " +
-					 "JOIN event e ON es.event_id = e.event_id " +
-					 "WHERE es.volunteer_id = ? " +
-					 "AND es.event_signup_end_time < CURRENT_TIMESTAMP " +
-					 "ORDER BY es.event_signup_start_time DESC"; 
-	
+
+		String sql = "SELECT DISTINCT es.volunteer_id, es.event_id, es.event_signup_start_time, es.event_signup_end_time, "
+				+
+				"e.event_name, e.event_location, DATE(es.event_signup_start_time) AS event_date " +
+				"FROM event_signup es " +
+				"JOIN event e ON es.event_id = e.event_id " +
+				"WHERE es.volunteer_id = ? " +
+				"AND es.event_signup_end_time < CURRENT_TIMESTAMP " +
+				"ORDER BY es.event_signup_start_time DESC";
+
 		try (PreparedStatement ps = db.conn.prepareStatement(sql)) {
-			ps.setInt(1, userId);  
-	
+			ps.setInt(1, userId);
+
 			try (ResultSet rs = ps.executeQuery()) {
 				while (rs.next()) {
 					int volunteerId = rs.getInt("volunteer_id");
@@ -471,12 +389,12 @@ public class DB {
 					LocalDateTime signupEnd = rs.getTimestamp("event_signup_end_time").toLocalDateTime();
 					String eventName = rs.getString("event_name");
 					String eventLocation = rs.getString("event_location");
-					LocalDateTime eventDate = signupStart.toLocalDate().atStartOfDay(); 
-	
+					LocalDateTime eventDate = signupStart.toLocalDate().atStartOfDay();
+
 					EventSignup eventSignup = new EventSignup(volunteerId, eventId, signupStart, signupEnd);
 					eventSignup.setEventName(eventName);
 					eventSignup.setEventLocation(eventLocation);
-	
+
 					if (!isDuplicate(list, eventId, eventDate)) {
 						list.add(eventSignup);
 					}
@@ -486,80 +404,80 @@ public class DB {
 			System.err.println("Error loading past event signups for user " + userId + ": " + ex.getMessage());
 			ex.printStackTrace(System.err);
 		}
-	
-		return list;  
+
+		return list;
 	}
-	
+
 	private static boolean isDuplicate(ArrayList<EventSignup> list, int eventId, LocalDateTime eventDate) {
 		for (EventSignup es : list) {
-			if (es.getEventId() == eventId && es.getEventSignupStartTime().toLocalDate().isEqual(eventDate.toLocalDate())) {
-				return true;  
+			if (es.getEventId() == eventId
+					&& es.getEventSignupStartTime().toLocalDate().isEqual(eventDate.toLocalDate())) {
+				return true;
 			}
 		}
-		return false;  
+		return false;
 	}
 
 	public static ArrayList<EventSignup> loadEventSignupsForEvent(int eventId) {
-    ArrayList<EventSignup> list = new ArrayList<>();
+		ArrayList<EventSignup> list = new ArrayList<>();
 
-    String sql =
-        "SELECT es.volunteer_id, es.event_id, " +
-        "       es.event_signup_start_time, es.event_signup_end_time, " +
-        "       u.user_name " +
-        "FROM event_signup es " +
-        "JOIN user u ON es.volunteer_id = u.user_id " +
-        "WHERE es.event_id = ? " +
-        "  AND es.event_signup_end_time IS NOT NULL " +
-        "ORDER BY es.event_signup_start_time";
+		String sql = "SELECT es.volunteer_id, es.event_id, " +
+				"       es.event_signup_start_time, es.event_signup_end_time, " +
+				"       u.user_name " +
+				"FROM event_signup es " +
+				"JOIN user u ON es.volunteer_id = u.user_id " +
+				"WHERE es.event_id = ? " +
+				"  AND es.event_signup_end_time IS NOT NULL " +
+				"ORDER BY es.event_signup_start_time";
 
-    try (PreparedStatement ps = db.conn.prepareStatement(sql)) {
-        ps.setInt(1, eventId);
+		try (PreparedStatement ps = db.conn.prepareStatement(sql)) {
+			ps.setInt(1, eventId);
 
-        try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                int volunteerId = rs.getInt("volunteer_id");
-                LocalDateTime start = null;
-                LocalDateTime end = null;
+			try (ResultSet rs = ps.executeQuery()) {
+				while (rs.next()) {
+					int volunteerId = rs.getInt("volunteer_id");
+					LocalDateTime start = null;
+					LocalDateTime end = null;
 
-                var tsStart = rs.getTimestamp("event_signup_start_time");
-                if (tsStart != null) {
-                    start = tsStart.toLocalDateTime();
-                }
+					var tsStart = rs.getTimestamp("event_signup_start_time");
+					if (tsStart != null) {
+						start = tsStart.toLocalDateTime();
+					}
 
-                var tsEnd = rs.getTimestamp("event_signup_end_time");
-                if (tsEnd != null) {
-                    end = tsEnd.toLocalDateTime();
-                }
+					var tsEnd = rs.getTimestamp("event_signup_end_time");
+					if (tsEnd != null) {
+						end = tsEnd.toLocalDateTime();
+					}
 
-                EventSignup signup = new EventSignup(volunteerId, eventId, start, end);
+					EventSignup signup = new EventSignup(volunteerId, eventId, start, end);
 
-                list.add(signup);
-            }
-        }
-    } catch (SQLException ex) {
-        System.err.println("Error loading signups for event " + eventId + ": " + ex.getMessage());
-        ex.printStackTrace(System.err);
-    }
+					list.add(signup);
+				}
+			}
+		} catch (SQLException ex) {
+			System.err.println("Error loading signups for event " + eventId + ": " + ex.getMessage());
+			ex.printStackTrace(System.err);
+		}
 
-    return list;
-}
+		return list;
+	}
 
-public static ArrayList<Integer> loadVolunteerIds() {
-    ArrayList<Integer> list = new ArrayList<>();
+	public static ArrayList<Integer> loadVolunteerIds() {
+		ArrayList<Integer> list = new ArrayList<>();
 
-    String sql = "SELECT user_id FROM `user` WHERE `user_type` = 'volun' AND `user_status` = 1";
+		String sql = "SELECT user_id FROM `user` WHERE `user_type` = 'volun' AND `user_status` = 1";
 
-    try (PreparedStatement ps = db.conn.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
-        while (rs.next()) {
-            list.add(rs.getInt("user_id"));
-        }
-    } catch (Exception ex) {
-        System.err.println("Error loading volunteer ids: " + ex.getMessage());
-        ex.printStackTrace(System.err);
-    }
+		try (PreparedStatement ps = db.conn.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
+			while (rs.next()) {
+				list.add(rs.getInt("user_id"));
+			}
+		} catch (Exception ex) {
+			System.err.println("Error loading volunteer ids: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+		}
 
-    return list;
-}
+		return list;
+	}
 
 }

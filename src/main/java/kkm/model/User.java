@@ -7,7 +7,6 @@ public class User {
     private String phone;
     private boolean isAdmin;
 
-    // Full constructor
     public User(int userId, String fullName, String email, String phone, boolean isAdmin) {
         this.userId = userId;
         this.fullName = fullName;
