@@ -13,8 +13,7 @@ public final class Session {
     private static LocalDateTime signInTime = null;
     private static int userId = -1;
     private static String userName = "";
-    private static double totalHours;
-
+    
     private Session() {
     } 
 
