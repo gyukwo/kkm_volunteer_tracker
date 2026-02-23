@@ -3,6 +3,7 @@ package kkm.pages;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import javafx.stage.Stage;
 import kkm.DB;
 import kkm.Session;
+import kkm.model.EventSignup;
 
 public class PDFPage {
 
@@ -29,12 +31,10 @@ public class PDFPage {
         if (volunteerName == null || volunteerName.trim().isEmpty()) {
             volunteerName = "Volunteer #" + volunteerId;
         }
-        
+
         String adminName = Session.getUserName();
 
         double totalHours = Session.getTotalHours(volunteerId);
-
-        LocalDate lastVolunteerDate = null;
 
         LocalDate issueDate = LocalDate.now();
         DateTimeFormatter issueFmt = DateTimeFormatter.ofPattern("MMMM d, yyyy");
@@ -44,23 +44,42 @@ public class PDFPage {
         String supervisorText = "Name of Supervisor(s): " + adminName;
         String orgInfoText = "Issuing Organization: Kingdom Kids Ministry, 100 Rockland Ave, Norwood, NJ 07648, (201) 767-0400";
 
-        String descriptionText =
-            "Description of Volunteer Services: " +
-            volunteerName +
-            " has faithfully served with Kingdom Kids Ministry in various roles, " +
-            "including assisting with weekly programs, special events, and other service activities.";
+        String descriptionText = "Description of Volunteer Services: " +
+                volunteerName +
+                " has faithfully served with Kingdom Kids Ministry in various roles, " +
+                "including assisting with weekly programs, special events, and other service activities.";
 
-        String totalHoursText =
-            "Total Hours Served: " + String.format("%.2f", totalHours) + " hours.";
+        String totalHoursText = "Total Hours Served: " + String.format("%.2f", totalHours) + " hours.";
 
-        String lastDateText = "Last Date Volunteered: " +
-            (lastVolunteerDate == null ? "N/A" : lastVolunteerDate.format(issueFmt));
+        LocalDate lastDate = null;
+        ArrayList<EventSignup> signups = DB.loadPastEventSignupsForUser(volunteerId);
+        if (signups != null && !signups.isEmpty()) {
+            for (EventSignup es : signups) {
+                LocalDateTime start = es.getEventSignupStartTime();
+                if (start != null) {
+                    LocalDate d = start.toLocalDate();
+                    if (lastDate == null || d.isAfter(lastDate)) {
+                        lastDate = d;
+                    }
+                }
+            }
+        }
 
-        String evaluationText =
-            "Evaluation: " +
-            volunteerName +
-            " has demonstrated reliability, a positive attitude, and a strong commitment to serving others. " +
-            "Their contribution has been a blessing to the children and families in our community.";
+        DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        String lastDateStr;
+        if (lastDate == null) {
+            lastDateStr = "N/A";
+        } else {
+            lastDateStr = lastDate.format(dateFmt);
+        }
+
+        String lastDateText = "Last Date Volunteered: " + lastDateStr;
+
+        String evaluationText = "Evaluation: " +
+                volunteerName +
+                " has demonstrated reliability, a positive attitude, and a strong commitment to serving others. " +
+                "Their contribution has been a blessing to the children and families in our community.";
 
         try (PDDocument doc = new PDDocument()) {
 
@@ -80,7 +99,7 @@ public class PDFPage {
             float imgHeight = logo.getHeight() * scale;
 
             float imgX = (pageWidth - imgWidth) / 2f;
-            float imgY = pageHeight - imgHeight - 40f; 
+            float imgY = pageHeight - imgHeight - 40f;
 
             PDFont titleFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
             PDFont bodyFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
@@ -94,7 +113,7 @@ public class PDFPage {
             List<String> titleLines = wrapText(
                     "Letter of Verification for Student Community Service",
                     titleFont, titleFontSize, maxTextWidth);
-            
+
             List<String> issueLines = wrapText(issueDateText, bodyFont, bodyFontSize, maxTextWidth);
             List<String> nameLines = wrapText(nameText, bodyFont, bodyFontSize, maxTextWidth);
             List<String> supervisorLines = wrapText(supervisorText, bodyFont, bodyFontSize, maxTextWidth);
@@ -107,7 +126,7 @@ public class PDFPage {
             try (PDPageContentStream contentStream = new PDPageContentStream(doc, page)) {
                 contentStream.drawImage(logo, imgX, imgY, imgWidth, imgHeight);
 
-                float textStartY = imgY - 60f; 
+                float textStartY = imgY - 60f;
 
                 contentStream.beginText();
                 contentStream.newLineAtOffset(marginLeft, textStartY);
@@ -115,9 +134,9 @@ public class PDFPage {
                 contentStream.setFont(titleFont, titleFontSize);
                 for (String line : titleLines) {
                     contentStream.showText(line);
-                    contentStream.newLineAtOffset(0, - (titleFontSize + 4));
+                    contentStream.newLineAtOffset(0, -(titleFontSize + 4));
                 }
-                contentStream.newLineAtOffset(0, - (bodyFontSize + 4));
+                contentStream.newLineAtOffset(0, -(bodyFontSize + 4));
 
                 contentStream.setFont(bodyFont, bodyFontSize);
 
@@ -181,9 +200,9 @@ public class PDFPage {
     private static void printLines(PDPageContentStream cs, List<String> lines, float fontSize) throws IOException {
         for (String line : lines) {
             cs.showText(line);
-            cs.newLineAtOffset(0, - (fontSize + 2));
+            cs.newLineAtOffset(0, -(fontSize + 2));
         }
-        cs.newLineAtOffset(0, - (fontSize + 4));
+        cs.newLineAtOffset(0, -(fontSize + 4));
     }
 
 }
