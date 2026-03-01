@@ -87,14 +87,14 @@ public class PDFPage {
             doc.addPage(page);
 
             PDImageXObject logo = PDImageXObject.createFromFile(
-                    "/Users/ryankwon/Documents/kkm_volunteer_tracker/kkm_logo.jpg",
+                    "/Users/ryankwon/Documents/Forms/Product/kkm_volunteer_tracker/kkm_logo.jpg",
                     doc);
 
             PDRectangle mediaBox = page.getMediaBox();
             float pageWidth = mediaBox.getWidth();
             float pageHeight = mediaBox.getHeight();
 
-            float scale = 0.5f; // adjust as needed
+            float scale = 0.5f; 
             float imgWidth = logo.getWidth() * scale;
             float imgHeight = logo.getHeight() * scale;
 
